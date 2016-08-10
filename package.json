@@ -1,0 +1,9 @@
+{
+  "name": "azure-blob-fs",
+  "version": "0.0.1-placeholder",
+  "description": "A drop-in replacement for accessing Azure Blob with Node.js \"fs\" API",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/compulim/azure-blob-fs.git"
+  }
+}
