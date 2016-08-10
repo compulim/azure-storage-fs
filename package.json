@@ -1,9 +1,24 @@
 {
-  "name": "azure-blob-fs",
-  "version": "0.0.1-placeholder",
-  "description": "A drop-in replacement for accessing Azure Blob with Node.js \"fs\" API",
+  "name": "azure-storage-fs",
+  "version": "0.0.1",
+  "description": "A drop-in \"fs\" replacement for accessing Azure Storage with Node.js \"fs\" API",
   "repository": {
     "type": "git",
-    "url": "https://github.com/compulim/azure-blob-fs.git"
+    "url": "https://github.com/compulim/azure-storage-fs.git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.4.1",
+    "node-uuid": "^1.4.7"
+  },
+  "peerDependencies": {
+    "azure-storage": "^1.2.0"
+  },
+  "main": "index.js",
+  "devDependencies": {
+    "mocha": "^3.0.2"
+  },
+  "scripts": {
+    "test": "mocha"
   }
 }
