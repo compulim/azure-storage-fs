@@ -1,6 +1,6 @@
 {
   "name": "azure-storage-fs",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A drop-in \"fs\" replacement for accessing Azure Storage with Node.js \"fs\" API",
   "repository": {
     "type": "git",

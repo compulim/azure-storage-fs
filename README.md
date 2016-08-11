@@ -11,9 +11,13 @@ Supported APIs
 Blob
 ----
 
+* `createReadStream`
+* `createWriteStream`
 * `mkdir`
 * `open`
 * `readdir`
+* `readFile`
+* `rename`
 * `rmdir`
 * `stat`
 * `unlink`
@@ -22,4 +26,12 @@ Blob
 Changelog
 =========
 
-0.0.1 (2016-08-11): Pre-release
+0.0.3 (2016-08-11)
+---
+
+* Support all APIs required by [ftpd](https://www.npmjs.com/package/ftpd)
+
+0.0.1 (2016-08-11)
+---
+
+* Pre-release
