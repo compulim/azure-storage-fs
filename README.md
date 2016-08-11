@@ -30,7 +30,7 @@ Blob Service
     * Append is not supported
     * `encoding` is not supported
 * `mkdir`
-  * Will create a blob under the new folder, named `$$$.$$$`
+  * Will create a hidden blob under the new folder, named `$$$.$$$`
 * `open`
   * Supported mode: `r`, `w`, and `wx`
   * Only default options are supported
@@ -42,7 +42,7 @@ Blob Service
 * `rename`
   * Implemented as copy-and-delete
 * `rmdir`
-  * Will delete blob named `$$$.$$$` if exists
+  * Will delete hidden blob `$$$.$$$` if exists
 * `stat`
   * Only support the followings:
     * `isDirectory()`
@@ -67,7 +67,7 @@ Integration with ftpd
 
 [`ftpd`](https://www.npmjs.com/package/ftpd) supports custom "fs" implementation and `azure-storage-fs` is designed to be a "fs" provider for `ftpd`.
 
-To use a custom "fs" implementation, in your `ftpd` authorization code, add `require(azure-storage-fs)(accountName, secret, container)` to the `success` callback. For example,
+To use a custom "fs" implementation, in your `ftpd` authorization code (`command:pass` event), add `require(azure-storage-fs).blob(accountName, secret, container)` to the `success` callback. For example,
 
 ```js
 connection.on('command:pass', (password, success, failure) => {
