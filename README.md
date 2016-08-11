@@ -96,7 +96,8 @@ connection.on('command:pass', (password, success, failure) => {
   * For empty directory, we keep a hidden blob named `$$$.$$$`
   * By default, we delimit by `/`
 * When listing files, `ftpd` will call `fs.readdir()` first, then `fs.stat()` for every file
-  * Listing a folder with tons of file will result in lots of requests to Azure
+  * Listing a folder with 10 files will result in 11 requests to Azure
+  * Calling `fs.stat()` on a directory will result in 2 calls to Azure
 
 ## Changelog
 
