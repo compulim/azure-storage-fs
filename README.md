@@ -5,8 +5,7 @@ A drop-in "fs" replacement for accessing Azure Storage with Node.js "fs" API.
 
 This package is designed to support [ftpd](https://www.npmjs.com/package/ftpd).
 
-How to use
-==========
+## How to use
 
 ```js
 const fs = require('azure-storage-fs').blob(accountName, secret, container);
@@ -16,11 +15,9 @@ fs.readFile('helloworld.txt', (err, data) => {
 });
 ```
 
-Supported APIs
-==============
+## Supported APIs
 
-Blob Service
-------------
+### Blob Service
 
 * `createReadStream`
   * Only default options are supported
@@ -57,13 +54,11 @@ Blob Service
     * Append is not supported
     * `encoding` is not supported
 
-File Service
-------------
+### File Service
 
 In future, we will support Azure Storage File, which is another file storage service accessible thru HTTP interface and SMB on Azure.
 
-Integration with ftpd
-=====================
+## Integration with ftpd
 
 [`ftpd`](https://www.npmjs.com/package/ftpd) supports custom "fs" implementation and `azure-storage-fs` is designed to be a "fs" provider for `ftpd`.
 
@@ -79,14 +74,12 @@ connection.on('command:pass', (password, success, failure) => {
 });
 ```
 
-Some ideas for ftpd
-===================
+## Some ideas for ftpd
 
 * Different users store their files on different Blob container
 * Username/password can be stored as container metadata
 
-Some caveats for ftpd
-=====================
+## Some caveats for ftpd
 
 * Azure Storage is eventually consistent, changes may not happen right away
   * After uploaded a file, it may not appear in the file list immediately
@@ -95,8 +88,7 @@ Some caveats for ftpd
 * When listing files, `ftpd` will call `fs.readdir` first, then `fs.stat` for every file
   * Listing a folder with tons of file will result in lots of requests to Azure
 
-Changelog
-=========
+## Changelog
 
 0.0.4 (2016-08-11)
 ---
