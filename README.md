@@ -28,6 +28,8 @@ For example, `\Users\Documents\HelloWorld.txt` will become `Users/Documents/Hell
 
 ### Blob service
 
+Since Blob service is flat natively, it does not support directory tree. It use delimiter `/` to provides a hierarchical view of its flat structure. A hidden empty blob named `$$$.$$$` is used to represent empty directory.
+
 * `createReadStream`
   * Only default options are supported
     * `encoding` is not supported
@@ -50,7 +52,7 @@ For example, `\Users\Documents\HelloWorld.txt` will become `Users/Documents/Hell
 * `rmdir`
   * Will delete hidden blob `$$$.$$$` if exists
 * `stat`
-  * Only support the followings:
+  * Only report the following properties
     * `isDirectory()`
     * `mode` always equals to `R_OK | W_OK`
     * `mtime`
@@ -87,14 +89,12 @@ connection.on('command:pass', (password, success, failure) => {
 
 * Different users store their files on different Blob container
 * Username/password can be stored as container metadata
+* Trigger webhook when a file is uploaded to FTP
 
 ## Some caveats for ftpd
 
 * Azure Storage is eventually consistent, changes may not happen right away
   * After uploaded a file, it may not appear in the file list immediately
-* Blob service is flat and does not natively support directory tree
-  * For empty directory, we keep a hidden empty blob named `$$$.$$$`
-  * By default, we delimit by `/`
 * When listing files, `ftpd` will call `fs.readdir()` first, then `fs.stat()` for every file
   * Listing a folder with 10 files will result in 11 requests to Azure
   * Calling `fs.stat()` on a directory will result in 2 calls to Azure
