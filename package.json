@@ -8,8 +8,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "bluebird": "^3.4.1",
-    "node-uuid": "^1.4.7"
+    "bluebird": "^3.4.1"
   },
   "peerDependencies": {
     "azure-storage": "^1.2.0"
