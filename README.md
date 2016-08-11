@@ -106,7 +106,7 @@ connection.on('command:pass', (password, success, failure) => {
 
 * `rmdir` now only delete hidden blob `$$$.$$$`, instead of delete blobs recursively
 * `unlink` now fail if the blob does not exist
-* Add [examples](tree/master/examples)
+* Add [examples](examples)
 
 0.0.3 (2016-08-11)
 ---
