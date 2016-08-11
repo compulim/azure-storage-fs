@@ -71,7 +71,7 @@ In future, we plan to support Azure Storage File, which is another file storage 
 
 [`ftpd`](https://www.npmjs.com/package/ftpd) supports custom "fs" implementation and `azure-storage-fs` is designed to be a "fs" provider for `ftpd`.
 
-To use a custom "fs" implementation, in your `ftpd` authorization code (`command:pass` event), add `require(azure-storage-fs).blob(accountName, secret, container)` to the `success` callback. For example,
+To use a custom "fs" implementation, in your `ftpd` authorization code (`command:pass` event), add `require('azure-storage-fs').blob(accountName, secret, container)` to the `success` callback. For example,
 
 ```js
 connection.on('command:pass', (password, success, failure) => {
