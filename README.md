@@ -17,7 +17,15 @@ fs.readFile('helloworld.txt', (err, data) => {
 
 ## Supported APIs
 
-### Blob Service
+### Path normalization
+
+Paths will be normalized with the following rules:
+1. Turn backslash (Windows-style) into slashes
+2. Remove leading slashes
+
+For example, `\Users\Documents\HelloWorld.txt` will become `Users/Documents/HelloWorld.txt`.
+
+### Blob service
 
 * `createReadStream`
   * Only default options are supported
@@ -54,9 +62,9 @@ fs.readFile('helloworld.txt', (err, data) => {
     * Append is not supported
     * `encoding` is not supported
 
-### File Service
+### File service
 
-In future, we will support Azure Storage File, which is another file storage service accessible thru HTTP interface and SMB on Azure.
+In future, we plan to support Azure Storage File, which is another file storage service accessible thru HTTP interface and SMB on Azure.
 
 ## Integration with ftpd
 
