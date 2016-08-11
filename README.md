@@ -83,9 +83,10 @@ connection.on('command:pass', (password, success, failure) => {
 
 * Azure Storage is eventually consistent, changes may not happen right away
   * After uploaded a file, it may not appear in the file list immediately
-* Azure Storage Blob does not support directory
+* Blob service does not support directory
   * For empty directory, we keep a hidden blob named `$$$.$$$`
-* When listing files, `ftpd` will call `fs.readdir` first, then `fs.stat` for every file
+  * By default, we delimit by `/`
+* When listing files, `ftpd` will call `fs.readdir()` first, then `fs.stat()` for every file
   * Listing a folder with tons of file will result in lots of requests to Azure
 
 ## Changelog
