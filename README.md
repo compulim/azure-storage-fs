@@ -20,7 +20,8 @@ fs.readFile('helloworld.txt', (err, data) => {
 ### Path normalization
 
 Paths will be normalized with the following rules:
-1. Turn backslash (Windows-style) into slashes
+
+1. Turn backslash (Windows-style) into slashes, then
 2. Remove leading slashes
 
 For example, `\Users\Documents\HelloWorld.txt` will become `Users/Documents/HelloWorld.txt`.
