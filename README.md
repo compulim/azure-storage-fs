@@ -54,12 +54,15 @@ Only block blob is supported and is the default blob type when creating a new bl
     * New `snapshot` options for specifying ID of the snapshot to read
 * `rename`
   * Implemented as copy-and-delete
-  * (WIP) Need to check if snapshot can be supported
+    * Because rename is not natively supported, snapshots will be lost after rename
 * `rmdir`
   * Will delete hidden blob `$$$.$$$` if exists
-* `snapshot(filename, newSnapshotID = undefined)`
-  * (WIP) Will create a new snapshot based on existing blob
+* `snapshot(filename, options)`
+  * Will create a new snapshot based on existing blob
   * Will return the new snapshot ID
+  * Options can be passed
+    * `snapshot` (optional)
+      * The snapshot ID to base the new snapshot on
 * `stat(pathname, options)`
   * Only report the following properties
     * `isDirectory()`
