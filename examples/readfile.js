@@ -6,7 +6,7 @@ const fs = require('../index').blob(
   process.env.BLOB_CONTAINER
 );
 
-fs.readFile('helloworld.txt', (err, data) => {
+fs.readFile('snapshot/hello.txt', { snapshot: '2016-09-23T04:39:04.9822174Z' }, (err, data) => {
   if (err) { return console.error('failed'); }
 
   console.log(data.toString());

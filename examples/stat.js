@@ -6,7 +6,7 @@ const fs = require('../index').blob(
   process.env.BLOB_CONTAINER
 );
 
-fs.stat('filebucket/FAQs.xlsx', { snapshot: true }, (err, stat) => {
+fs.stat('snapshot/hello.txt', { snapshot: true }, (err, stat) => {
   if (err) { return console.error('failed'); }
 
   console.log(stat);
