@@ -57,13 +57,22 @@ Only block blob is supported and is the default blob type when creating a new bl
     * Because rename is not natively supported, snapshots will be lost after rename
 * `rmdir`
   * Will delete hidden blob `$$$.$$$` if exists
-* `snapshot(filename, options)`
+* `sas(path, options)` (New)
+  * Will create a Shared Access Signature token for a blob synchronously
+  * Options can be passed
+    * `flag` (optional)
+      * [Permission level](https://msdn.microsoft.com/library/dn140255.aspx) of the blob: `r`, `a`, `c`, `w`, `d`
+    * `start` (optional)
+      * Start time of the token
+    * `expiry` (optional)
+      * Expiry time of the token
+* `snapshot(path, options)` (New)
   * Will create a new snapshot based on existing blob
   * Will return the new snapshot ID
   * Options can be passed
     * `snapshot` (optional)
       * The snapshot ID to base the new snapshot on
-* `stat(pathname, options)`
+* `stat(path, options)`
   * Only report the following properties
     * `isDirectory()`
     * `mode` always equals to `R_OK | W_OK`
@@ -130,6 +139,12 @@ connection.on('command:pass', (password, success, failure) => {
   * Calling `fs.stat()` on a directory will result in 2 calls to Azure
 
 ## Changelog
+
+0.0.5 (2016-09-28)
+---
+
+* sas: Added `sas()` to create a blob SAS token synchronously
+* snapshot: Added `snapshot()` to create a blob snapshot
 
 0.0.4 (2016-08-11)
 ---
