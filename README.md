@@ -7,6 +7,10 @@ This package is designed to support [ftpd](https://www.npmjs.com/package/ftpd).
 
 ## How to use
 
+`azure-storage-fs` is designed to replace Node.js "fs" package and integrate with [`ftpd`](https://www.npmjs.com/package/ftpd) package.
+
+### Replace Node.js "fs" package
+
 ```js
 const fs = require('azure-storage-fs').blob(accountName, secret, container);
 
@@ -14,6 +18,36 @@ fs.readFile('helloworld.txt', (err, data) => {
   console.log(err || data);
 });
 ```
+
+### Integration with ftpd
+
+[`ftpd`](https://www.npmjs.com/package/ftpd) supports custom "fs" implementation and `azure-storage-fs` is designed to be a "fs" provider for `ftpd`.
+
+To use a custom "fs" implementation, in your `ftpd` authorization code (`command:pass` event), add `require('azure-storage-fs').blob(accountName, secret, container)` to the `success` callback. For example,
+
+```js
+connection.on('command:pass', (password, success, failure) => {
+  if (auth(username, password)) {
+    success(username, require('azure-storage-fs').blob(accountName, secret, container));
+  } else {
+    failure();
+  }
+});
+```
+
+#### Some ideas for ftpd
+
+* Use different container for each user
+* Username/password can be stored as container metadata, always salt and hash the password
+* Trigger webhook when a file is uploaded to FTP
+
+#### Some caveats for ftpd
+
+* Azure Storage is eventually consistent, changes may not happen right away
+  * After uploaded a file, it may not appear in the file list immediately
+* When listing files, `ftpd` will call `fs.readdir()` first, then `fs.stat()` for every file
+  * Listing a folder with 10 files will result in 11 requests to Azure
+  * Calling `fs.stat()` on a directory will result in 2 calls to Azure
 
 ## Supported APIs
 
@@ -109,36 +143,6 @@ Snapshot is supported and snapshot ID can be specified for most read APIs. `stat
 ### File service
 
 In future, we plan to support Azure Storage File, which is another file storage service accessible thru HTTP interface and SMB on Azure.
-
-## Integration with ftpd
-
-[`ftpd`](https://www.npmjs.com/package/ftpd) supports custom "fs" implementation and `azure-storage-fs` is designed to be a "fs" provider for `ftpd`.
-
-To use a custom "fs" implementation, in your `ftpd` authorization code (`command:pass` event), add `require('azure-storage-fs').blob(accountName, secret, container)` to the `success` callback. For example,
-
-```js
-connection.on('command:pass', (password, success, failure) => {
-  if (auth(username, password)) {
-    success(username, require('azure-storage-fs').blob(accountName, secret, container));
-  } else {
-    failure();
-  }
-});
-```
-
-## Some ideas for ftpd
-
-* Different users store their files on different Blob container
-* Username/password can be stored as container metadata
-* Trigger webhook when a file is uploaded to FTP
-
-## Some caveats for ftpd
-
-* Azure Storage is eventually consistent, changes may not happen right away
-  * After uploaded a file, it may not appear in the file list immediately
-* When listing files, `ftpd` will call `fs.readdir()` first, then `fs.stat()` for every file
-  * Listing a folder with 10 files will result in 11 requests to Azure
-  * Calling `fs.stat()` on a directory will result in 2 calls to Azure
 
 ## Changelog
 
