@@ -142,6 +142,15 @@ connection.on('command:pass', (password, success, failure) => {
 
 ## Changelog
 
+0.0.6 (2016-12-05)
+---
+
+* mkdir: Throw `EEXIST` when the directory already exists
+* rmdir: Throw `ENOTEMPTY` when the directory still contains one or more blobs after deleting `$$$.$$$` placeholder
+* sas: Added check on absence of required `expiry` option
+* sas: Will default `flag` to `r` if not set
+* Added more tests
+
 0.0.5 (2016-09-28)
 ---
 
