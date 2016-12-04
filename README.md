@@ -57,6 +57,7 @@ Only block blob is supported and is the default blob type when creating a new bl
     * Because rename is not natively supported, snapshots will be lost after rename
 * `rmdir`
   * Will delete hidden blob `$$$.$$$` if exists
+  * Checks if the directory is emptied, throw `ENOTEMPTY` if not
 * `sas(path, options)` (New)
   * Will create a Shared Access Signature token for a blob synchronously
   * Options can be passed
