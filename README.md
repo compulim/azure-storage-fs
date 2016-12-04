@@ -41,6 +41,7 @@ Only block blob is supported and is the default blob type when creating a new bl
     * Append is not supported
     * `encoding` is not supported
 * `mkdir`
+  * Throw `EEXIST` if the directory already exists
   * Will create a hidden blob under the new folder, named `$$$.$$$`
 * `open`
   * Supported mode: `r`, `w`, and `wx`
