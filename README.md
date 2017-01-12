@@ -154,7 +154,7 @@ In future, we plan to support Azure Storage File, which is another file storage 
 
 ## Changelog
 
-0.0.7 (2016-01-12)
+0.1.0 (2016-01-12)
 ---
 
 * createWriteStream: Add `metadata` support
