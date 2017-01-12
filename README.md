@@ -1,6 +1,8 @@
 azure-storage-fs
 ================
 
+[![npm version](https://badge.fury.io/js/azure-storage-fs.svg)](https://badge.fury.io/js/azure-storage-fs) [![Node.js dependencies](https://david-dm.org/candrholdings/azure-storage-fs.svg)](https://david-dm.org/candrholdings/azure-storage-fs) [![npm downloads](https://img.shields.io/npm/dm/azure-storage-fs.svg)](https://img.shields.io/npm/dm/azure-storage-fs.svg)
+
 A drop-in "fs" replacement for accessing Azure Storage with Node.js "fs" API.
 
 This package is designed to support [ftpd](https://www.npmjs.com/package/ftpd).
