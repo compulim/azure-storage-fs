@@ -1,7 +1,7 @@
 azure-storage-fs
 ================
 
-[![npm version](https://badge.fury.io/js/azure-storage-fs.svg)](https://badge.fury.io/js/azure-storage-fs) [![Node.js dependencies](https://david-dm.org/candrholdings/azure-storage-fs.svg)](https://david-dm.org/candrholdings/azure-storage-fs) [![npm downloads](https://img.shields.io/npm/dm/azure-storage-fs.svg)](https://img.shields.io/npm/dm/azure-storage-fs.svg)
+[![npm version](https://badge.fury.io/js/azure-storage-fs.svg)](https://badge.fury.io/js/azure-storage-fs) [![Node.js dependencies](https://david-dm.org/compulim/azure-storage-fs.svg)](https://david-dm.org/compulim/azure-storage-fs) [![npm downloads](https://img.shields.io/npm/dm/azure-storage-fs.svg)](https://img.shields.io/npm/dm/azure-storage-fs.svg)
 
 A drop-in "fs" replacement for accessing Azure Storage with Node.js "fs" API.
 
@@ -196,6 +196,6 @@ In future, we plan to support Azure Storage File, which is another file storage 
 
 ## Contributions
 
-Like us? [Star](https://github.com/candrholdings/azure-storage-fs/stargazers) us.
+Like us? [Star](https://github.com/compulim/azure-storage-fs/stargazers) us.
 
-Doesn't work as expected? File us an [issue](https://github.com/candrholdings/azure-storage-fs/issues) with minimal code for bug repro.
+Doesn't work as expected? File us an [issue](https://github.com/compulim/azure-storage-fs/issues) with minimal code for bug repro.
