@@ -9,7 +9,7 @@ const fetch = require('node-fetch');
 
 describe('writeFile', () => {
   context('when write "TEST" to "writeFile.txt"', () => {
-    beforeEach(async () => await fsPromise.writeFile('writeFile.txt', 'TEST'));
+    beforeEach(async () => await fsPromise.writeFile('writeFile.txt', 'TEST', { metadata: { hello: 'Aloha!' } }));
     afterEach(async () => await fsPromise.unlink('writeFile.txt'));
 
     it('should have wrote "TEST" to the file', async () => {
@@ -18,26 +18,30 @@ describe('writeFile', () => {
       const url = `https://${ env.BLOB_ACCOUNT_NAME }.blob.core.windows.net/${ env.BLOB_CONTAINER }/writeFile.txt?${ token }`;
       const res = await fetch(url);
 
-      assert.equal(200, res.status);
+      assert.equal(res.status, 200);
 
       const content = await res.text();
 
-      assert.equal('TEST', content);
+      assert.equal(content, 'TEST');
     });
 
     context('when stat-ing the file', () => {
       let stat;
 
       beforeEach(async () => {
-        stat = await fsPromise.stat('writeFile.txt');
+        stat = await fsPromise.stat('writeFile.txt', { metadata: true });
       });
 
       it('should have a file size of 4 bytes', () => {
-        assert.equal(4, stat.size);
+        assert.equal(stat.size, 4);
       });
 
       it('should not be a directory', () => {
-        assert.equal(false, stat.isDirectory());
+        assert.equal(stat.isDirectory(), false);
+      });
+
+      it('should have metadata "hello" equals to "Aloha!"', () => {
+        assert.deepEqual(stat.metadata, { hello: 'Aloha!' });
       });
     });
   });

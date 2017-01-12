@@ -74,6 +74,7 @@ Only block blob is supported and is the default blob type when creating a new bl
   * Only default options are supported
     * Append is not supported
     * `encoding` is not supported
+    * New `metadata` option to specify blob metadata
 * `mkdir`
   * Throw `EEXIST` if the directory already exists
   * Will create a hidden blob under the new folder, named `$$$.$$$`
@@ -90,6 +91,7 @@ Only block blob is supported and is the default blob type when creating a new bl
 * `rename`
   * Implemented as copy-and-delete
     * Because rename is not natively supported, snapshots will be lost after rename
+    * Metadata will be retained
 * `rmdir`
   * Will delete hidden blob `$$$.$$$` if exists
   * Checks if the directory is emptied, throw `ENOTEMPTY` if not
@@ -117,6 +119,9 @@ Only block blob is supported and is the default blob type when creating a new bl
       * `0` for directory
     * New `url` for the actual URL (not support Shared Access Signature yet)
   * Options can be passed as the second argument
+    * `metadata` (default set to `false`)
+      * When set to `true`, the call will also return metadata
+      * When paired with `snapshot` options, the call will also return metadata for snapshots
     * `snapshot` (default set to `false`)
       * When set to `true`, the call will also return an array named `snapshots`, each with the following properties
         * `id` is the snapshot ID
@@ -135,6 +140,7 @@ Only block blob is supported and is the default blob type when creating a new bl
   * Only default options are supported
     * Append is not supported
     * `encoding` is not supported
+    * New `metadata` option to specify blob metadata
 
 #### Snapshot
 
@@ -145,6 +151,14 @@ Snapshot is supported and snapshot ID can be specified for most read APIs. `stat
 In future, we plan to support Azure Storage File, which is another file storage service accessible thru HTTP interface and SMB on Azure.
 
 ## Changelog
+
+0.0.7 (2016-01-12)
+---
+
+* createWriteStream: Add `metadata` support
+* snapshot: Add `metadata` support
+* stat: Add `metadata` support
+* writeFile: Add `metadata` support
 
 0.0.6 (2016-12-05)
 ---
@@ -177,3 +191,9 @@ In future, we plan to support Azure Storage File, which is another file storage 
 ---
 
 * Pre-release
+
+## Contributions
+
+Like us? [Star](https://github.com/candrholdings/azure-storage-fs/stargazers) us.
+
+Doesn't work as expected? File us an [issue](https://github.com/candrholdings/azure-storage-fs/issues) with minimal code for bug repro.
