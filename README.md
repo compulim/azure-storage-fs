@@ -154,6 +154,13 @@ In future, we plan to support Azure Storage File, which is another file storage 
 
 ## Changelog
 
+0.1.1 (2016-01-13)
+---
+
+* createWriteStream: Add `contentSettings` support
+* stat: Add `contentSettings` support
+* writeFile: Add `contentSettings` support
+
 0.1.0 (2016-01-12)
 ---
 

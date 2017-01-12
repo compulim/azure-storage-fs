@@ -9,7 +9,7 @@ const fetch = require('node-fetch');
 
 describe('writeFile', () => {
   context('when write "TEST" to "writeFile.txt"', () => {
-    beforeEach(async () => await fsPromise.writeFile('writeFile.txt', 'TEST', { metadata: { hello: 'Aloha!' } }));
+    beforeEach(async () => await fsPromise.writeFile('writeFile.txt', 'TEST', { contentSettings: { contentType: 'text/plain' }, metadata: { hello: 'Aloha!' } }));
     afterEach(async () => await fsPromise.unlink('writeFile.txt'));
 
     it('should have wrote "TEST" to the file', async () => {
@@ -42,6 +42,10 @@ describe('writeFile', () => {
 
       it('should have metadata "hello" equals to "Aloha!"', () => {
         assert.deepEqual(stat.metadata, { hello: 'Aloha!' });
+      });
+
+      it('should have "Content-Settings" set to "text/plain"', () => {
+        assert.equal(stat.contentSettings.contentType, 'text/plain');
       });
     });
   });
