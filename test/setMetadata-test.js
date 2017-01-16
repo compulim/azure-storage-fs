@@ -7,7 +7,7 @@ const fs = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONT
 const fsPromise = fs.promise;
 const TEST_FILENAME = 'metadata.txt';
 
-describe('metadata', () => {
+describe('setMetadata', () => {
   beforeEach(async () => await fsPromise.writeFile(TEST_FILENAME, 'TEST', { contentSettings: { contentType: 'text/plain' }, metadata: { hello: 'Aloha!' } }));
   afterEach(async () => await fsPromise.unlink(TEST_FILENAME));
 
