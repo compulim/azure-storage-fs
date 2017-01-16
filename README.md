@@ -106,6 +106,11 @@ Only block blob is supported and is the default blob type when creating a new bl
       * Start time of the token
     * `expiry` (optional)
       * Expiry time of the token
+* `setMetadata(metadata, options)` (New)
+  * Will modify metadata on existing blob
+  * Options can be passed
+    * `snapshot` (optional)
+      * The snapshot ID to modify the metadata on
 * `snapshot(path, options)` (New)
   * Will create a new snapshot based on existing blob
   * Will return the new snapshot ID
@@ -153,6 +158,11 @@ Snapshot is supported and snapshot ID can be specified for most read APIs. `stat
 In future, we plan to support Azure Storage File, which is another file storage service accessible thru HTTP interface and SMB on Azure.
 
 ## Changelog
+
+0.2.0 (2016-01-16)
+---
+
+* setMetadata: New API to set metadata on existing blob or snapshot
 
 0.1.1 (2016-01-13)
 ---

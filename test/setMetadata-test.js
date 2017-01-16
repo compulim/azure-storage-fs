@@ -20,7 +20,7 @@ describe('metadata', () => {
   });
 
   context('when modifying metadata', () => {
-    beforeEach(async () => await fsPromise.metadata(TEST_FILENAME, { hello: 'World!' }));
+    beforeEach(async () => await fsPromise.setMetadata(TEST_FILENAME, { hello: 'World!' }));
 
     context('then reading metadata', () => {
       let stat;
