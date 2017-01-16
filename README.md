@@ -159,12 +159,12 @@ In future, we plan to support Azure Storage File, which is another file storage 
 
 ## Changelog
 
-0.2.0 (2016-01-16)
+0.3.0 (2016-01-16)
 ---
 
 * setMetadata: New API to set metadata on existing blob or snapshot
 
-0.1.1 (2016-01-13)
+0.2.0 (2016-01-13)
 ---
 
 * createWriteStream: Add `contentSettings` support
