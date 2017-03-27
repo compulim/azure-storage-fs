@@ -42,7 +42,7 @@ describe('rmdir', () => {
       it('should throw ENOTEMPTY', async () => {
         try {
           await fsPromise.rmdir('rmdir');
-          throw new Error();
+          throw new Error('did not throw ENOTEMPTY');
         } catch (err) {
           assert.equal('ENOTEMPTY', err.code);
         }
@@ -80,7 +80,7 @@ describe('rmdir', () => {
       it('should throw "ENOTEMPTY"', async () => {
         try {
           await fsPromise.rmdir('rmdir');
-          throw new Error();
+          throw new Error('did not throw ENOTEMPTY');
         } catch (err) {
           assert.equal('ENOTEMPTY', err.code);
         }
