@@ -4,26 +4,25 @@ const assert = require('assert');
 const AzureBlobFS = require('../lib/AzureBlobFS');
 const { env } = process;
 const { promise: fsPromise } = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONTAINER);
-const PREFIX = env.BLOB_PREFIX ? env.BLOB_PREFIX + '/' : '';
-const TEST_FILENAME = PREFIX + 'readFile.txt';
-const { ensure, ensureNot, unlinkIfExist } = require('./utils');
+const helper = require('./testHelper')(fsPromise);
+
+const FILENAME = 'readFile.txt';
 
 describe('readFile', () => {
   beforeEach(async () => {
-    await unlinkIfExist(fsPromise, TEST_FILENAME);
-    await fsPromise.writeFile(TEST_FILENAME, 'Hello, World!');
-    await ensure(fsPromise, TEST_FILENAME);
+    await helper.ensureUnlinkIfExists(FILENAME);
+    await helper.ensureWriteFile(FILENAME, 'Hello, World!');
   });
 
   afterEach(async () => {
-    await unlinkIfExist(fsPromise, TEST_FILENAME);
+    await helper.ensureUnlinkIfExists(FILENAME);
   });
 
   describe('read a text file', () => {
     let content;
 
     beforeEach(async () => {
-      content = await fsPromise.readFile(TEST_FILENAME);
+      content = await fsPromise.readFile(FILENAME);
     });
 
     it('should be of type Buffer', () => {

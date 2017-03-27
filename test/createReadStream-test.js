@@ -5,26 +5,25 @@ const AzureBlobFS = require('../lib/AzureBlobFS');
 const { env } = process;
 const fs = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONTAINER);
 const fsPromise = fs.promise;
-const PREFIX = env.BLOB_PREFIX ? env.BLOB_PREFIX + '/' : '';
-const TEST_FILENAME = PREFIX + 'createReadStream.txt';
-const { ensure, unlinkIfExist } = require('./utils');
+const helper = require('./testHelper')(fsPromise);
+
+const FILENAME = 'createReadStream.txt';
 
 describe('createReadStream', () => {
   beforeEach(async () => {
-    await unlinkIfExist(fsPromise, TEST_FILENAME);
-    await fsPromise.writeFile(TEST_FILENAME, 'Hello, World!');
-    await ensure(fsPromise, TEST_FILENAME);
+    await helper.ensureUnlinkIfExists(FILENAME);
+    await helper.ensureWriteFile(FILENAME, 'Hello, World!');
   });
 
-  afterEach(() => {
-    return fsPromise.unlink(TEST_FILENAME);
+  afterEach(async () => {
+    await helper.ensureUnlinkIfExists(FILENAME);
   });
 
   describe('create a stream', () => {
     let readStream;
 
     beforeEach(() => {
-      readStream = fs.createReadStream(TEST_FILENAME);
+      readStream = fs.createReadStream(FILENAME);
     });
 
     describe('dump the stream', () => {
