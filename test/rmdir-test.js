@@ -3,13 +3,16 @@
 const assert = require('assert');
 const AzureBlobFS = require('../lib/AzureBlobFS');
 const { env } = process;
-const fsPromise = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONTAINER).promise;
+const { promise: fsPromise } = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONTAINER);
+const { ensure, ensureNot } = require('./utils');
 
 describe('rmdir', () => {
   context('with a file', () => {
     beforeEach(async () => {
       await fsPromise.mkdir('rmdir');
+      await ensure(fsPromise, 'rmdir/$$$.$$$');
       await fsPromise.writeFile('rmdir/test.txt', 'TEST');
+      await ensure(fsPromise, 'rmdir/test.txt');
     });
 
     afterEach(async () => {
@@ -21,6 +24,8 @@ describe('rmdir', () => {
         }
       }
 
+      await ensureNot(fsPromise, 'rmdir/test.txt');
+
       try {
         await fsPromise.rmdir('rmdir');
       } catch (err) {
@@ -28,6 +33,8 @@ describe('rmdir', () => {
           throw err;
         }
       }
+
+      await ensureNot(fsPromise, 'rmdir/$$$.$$$');
     });
 
     it('should have created "rmdir" folder', async () => {

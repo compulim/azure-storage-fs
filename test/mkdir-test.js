@@ -3,7 +3,7 @@
 const assert = require('assert');
 const AzureBlobFS = require('../lib/AzureBlobFS');
 const { env } = process;
-const fsPromise = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONTAINER).promise;
+const { promise: fsPromise } = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONTAINER);
 
 describe('mkdir', () => {
   beforeEach(async () => await fsPromise.mkdir('mkdir'));

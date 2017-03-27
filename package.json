@@ -8,17 +8,18 @@
   },
   "license": "MIT",
   "dependencies": {
-    "bluebird": "^3.4.7"
+    "bluebird": "^3.5.0"
   },
   "peerDependencies": {
-    "azure-storage": "^1.4.0"
+    "azure-storage": "^2.1.0"
   },
   "main": "index.js",
   "devDependencies": {
     "babel-preset-es2017": "^6.16.0",
     "babel-register": "^6.18.0",
     "mocha": "^3.2.0",
-    "node-fetch": "^1.6.3"
+    "node-fetch": "^1.6.3",
+    "promise-retry": "^1.1.1"
   },
   "scripts": {
     "test": "mocha"

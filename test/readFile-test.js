@@ -3,21 +3,21 @@
 const assert = require('assert');
 const AzureBlobFS = require('../lib/AzureBlobFS');
 const { env } = process;
-const fsPromise = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONTAINER).promise;
+const { promise: fsPromise } = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONTAINER);
 const PREFIX = env.BLOB_PREFIX ? env.BLOB_PREFIX + '/' : '';
 const TEST_FILENAME = PREFIX + 'readFile.txt';
+const { ensure, ensureNot, unlinkIfExist } = require('./utils');
 
 describe('readFile', () => {
-  beforeEach(() => {
-    return fsPromise.unlink(TEST_FILENAME).catch(err => {
-      if (err.code !== 'ENOENT') {
-        throw err;
-      }
-    }).then(() => fsPromise.writeFile(TEST_FILENAME, 'Hello, World!'));
+  beforeEach(async () => {
+    await unlinkIfExist(fsPromise, TEST_FILENAME);
+    await fsPromise.writeFile(TEST_FILENAME, 'Hello, World!');
+    await ensure(fsPromise, TEST_FILENAME);
   });
 
-  afterEach(() => {
-    return fsPromise.unlink(TEST_FILENAME);
+  afterEach(async () => {
+    await fsPromise.unlink(TEST_FILENAME);
+    await ensureNot(fsPromise, TEST_FILENAME);
   });
 
   describe('read a text file', () => {

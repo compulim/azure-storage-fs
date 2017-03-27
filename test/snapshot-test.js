@@ -4,18 +4,16 @@ const assert = require('assert');
 const AzureBlobFS = require('../lib/AzureBlobFS');
 const stream = require('stream');
 const { env } = process;
-const fs = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONTAINER);
-const fsPromise = fs.promise;
+const { promise: fsPromise } = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONTAINER);
 const PREFIX = env.BLOB_PREFIX ? env.BLOB_PREFIX + '/' : '';
 const TEST_FILENAME = PREFIX + 'snapshot.txt';
+const { ensure, ensureNot, unlinkIfExist } = require('./utils');
 
 describe('snapshot', () => {
-  beforeEach(() => {
-    return fsPromise.unlink(TEST_FILENAME).catch(err => {
-      if (err.code !== 'ENOENT') {
-        throw err;
-      }
-    }).then(() => fsPromise.writeFile(TEST_FILENAME, 'Hello, World!', { contentSettings: { contentType: 'text/plain' }, metadata: { version: '1' } }));
+  beforeEach(async () => {
+    await unlinkIfExist(fsPromise, TEST_FILENAME);
+    await fsPromise.writeFile(TEST_FILENAME, 'Hello, World!', { contentSettings: { contentType: 'text/plain' }, metadata: { version: '1' } });
+    await ensure(fsPromise, TEST_FILENAME);
   });
 
   afterEach(() => fsPromise.unlink(TEST_FILENAME));

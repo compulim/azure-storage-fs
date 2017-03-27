@@ -3,13 +3,20 @@
 const assert = require('assert');
 const AzureBlobFS = require('../lib/AzureBlobFS');
 const { env } = process;
-const fs = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONTAINER);
-const fsPromise = fs.promise;
+const { promise: fsPromise } = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONTAINER);
 const TEST_FILENAME = 'metadata.txt';
+const { ensure, ensureNot } = require('./utils');
 
 describe('setMetadata', () => {
-  beforeEach(async () => await fsPromise.writeFile(TEST_FILENAME, 'TEST', { contentSettings: { contentType: 'text/plain' }, metadata: { hello: 'Aloha!' } }));
-  afterEach(async () => await fsPromise.unlink(TEST_FILENAME));
+  beforeEach(async () => {
+    await fsPromise.writeFile(TEST_FILENAME, 'TEST', { contentSettings: { contentType: 'text/plain' }, metadata: { hello: 'Aloha!' } });
+    await ensure(fsPromise, TEST_FILENAME);
+  });
+
+  afterEach(async () => {
+    await fsPromise.unlink(TEST_FILENAME);
+    await ensureNot(fsPromise, TEST_FILENAME);
+  });
 
   context('when reading metadata', () => {
     let stat;
