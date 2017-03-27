@@ -4,11 +4,17 @@ const assert = require('assert');
 const AzureBlobFS = require('../lib/AzureBlobFS');
 const { env } = process;
 const { promise: fsPromise } = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONTAINER);
+const { ensure, ensureRmdirIfExist } = require('./utils');
 
 describe('mkdir', () => {
-  beforeEach(async () => await fsPromise.mkdir('mkdir'));
+  beforeEach(async () => {
+    await fsPromise.mkdir('mkdir');
+    await ensure(fsPromise, 'mkdir');
+  });
 
-  afterEach(async () => await fsPromise.rmdir('mkdir'));
+  afterEach(async () => {
+    await ensureRmdirIfExist(fsPromise, 'mkdir');
+  });
 
   it('should created the directory', async () => {
     const stat = await fsPromise.stat('mkdir');
@@ -20,7 +26,7 @@ describe('mkdir', () => {
     it('should throw EEXIST', async () => {
       try {
         await fsPromise.mkdir('mkdir');
-        throw new Error();
+        throw new Error('recreate directory should not success');
       } catch (err) {
         if (err.code !== 'EEXIST') {
           throw err;

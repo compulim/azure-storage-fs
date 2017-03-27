@@ -16,8 +16,7 @@ describe('readFile', () => {
   });
 
   afterEach(async () => {
-    await fsPromise.unlink(TEST_FILENAME);
-    await ensureNot(fsPromise, TEST_FILENAME);
+    await unlinkIfExist(fsPromise, TEST_FILENAME);
   });
 
   describe('read a text file', () => {

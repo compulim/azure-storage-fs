@@ -6,11 +6,12 @@ const { env } = process;
 const fs = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONTAINER);
 const fsPromise = fs.promise;
 const fetch = require('node-fetch');
+const { ensureUnlinkIfExist } = require('./utils');
 
 describe('writeFile', () => {
   context('when write "TEST" to "writeFile.txt"', () => {
     beforeEach(async () => await fsPromise.writeFile('writeFile.txt', 'TEST', { contentSettings: { contentType: 'text/plain' }, metadata: { hello: 'Aloha!' } }));
-    afterEach(async () => await fsPromise.unlink('writeFile.txt'));
+    afterEach(async () => await ensureUnlinkIfExist(fsPromise, 'writeFile.txt'));
 
     it('should have wrote "TEST" to the file', async () => {
       const now = Date.now();

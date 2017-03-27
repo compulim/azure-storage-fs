@@ -6,22 +6,22 @@ const { env } = process;
 const fs = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONTAINER);
 const fsPromise = fs.promise;
 const fetch = require('node-fetch');
+const retry = require('promise-retry');
+const { ensure, ensureNot, ensureUnlinkIfExist } = require('./utils');
 
 describe('unlink', () => {
-  beforeEach(async () => fsPromise.writeFile('unlink.txt', 'TEST'));
-
-  afterEach(async () => {
-    try {
-      await fsPromise.unlink('unlink.txt');
-    } catch (err) {
-      if (err.code !== 'ENOENT') {
-        throw err;
-      }
-    }
+  beforeEach(async () => {
+    await fsPromise.writeFile('unlink.txt', 'TEST');
+    await ensure(fsPromise, 'unlink.txt');
   });
 
+  afterEach(async () => await ensureUnlinkIfExist(fsPromise, 'unlink.txt'));
+
   context('when deleting the file', () => {
-    beforeEach(async () => await fsPromise.unlink('unlink.txt'));
+    beforeEach(async () => {
+      await fsPromise.unlink('unlink.txt');
+      await ensureNot(fsPromise, 'unlink.txt');
+    });
 
     it('should have deleted the file', async () => {
       try {

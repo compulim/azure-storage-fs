@@ -7,12 +7,13 @@ const fs = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONT
 const fsPromise = fs.promise;
 const PREFIX = env.BLOB_PREFIX ? env.BLOB_PREFIX + '/' : '';
 const TEST_FILENAME = PREFIX + 'createReadStream.txt';
-const { unlinkIfExist } = require('./utils');
+const { ensure, unlinkIfExist } = require('./utils');
 
 describe('createReadStream', () => {
   beforeEach(async () => {
     await unlinkIfExist(fsPromise, TEST_FILENAME);
     await fsPromise.writeFile(TEST_FILENAME, 'Hello, World!');
+    await ensure(fsPromise, TEST_FILENAME);
   });
 
   afterEach(() => {

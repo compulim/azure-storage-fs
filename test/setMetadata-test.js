@@ -5,7 +5,7 @@ const AzureBlobFS = require('../lib/AzureBlobFS');
 const { env } = process;
 const { promise: fsPromise } = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONTAINER);
 const TEST_FILENAME = 'metadata.txt';
-const { ensure, ensureNot } = require('./utils');
+const { ensure, ensureNot, ensureUnlinkIfExist } = require('./utils');
 
 describe('setMetadata', () => {
   beforeEach(async () => {
@@ -14,8 +14,7 @@ describe('setMetadata', () => {
   });
 
   afterEach(async () => {
-    await fsPromise.unlink(TEST_FILENAME);
-    await ensureNot(fsPromise, TEST_FILENAME);
+    await ensureUnlinkIfExist(fsPromise, TEST_FILENAME);
   });
 
   context('when reading metadata', () => {

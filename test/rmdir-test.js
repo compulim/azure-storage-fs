@@ -4,37 +4,26 @@ const assert = require('assert');
 const AzureBlobFS = require('../lib/AzureBlobFS');
 const { env } = process;
 const { promise: fsPromise } = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONTAINER);
-const { ensure, ensureNot } = require('./utils');
+const { ensure, ensureNot, ensureRmdirIfExist, ensureUnlinkIfExist, unlinkIfExist } = require('./utils');
 
 describe('rmdir', () => {
+  beforeEach(async () => {
+    await ensureUnlinkIfExist(fsPromise, 'rmdir/test.txt');
+    await ensureRmdirIfExist(fsPromise, 'rmdir/dir');
+    await ensureRmdirIfExist(fsPromise, 'rmdir');
+
+    await fsPromise.mkdir('rmdir');
+    await ensure(fsPromise, 'rmdir/$$$.$$$');
+  });
+
   context('with a file', () => {
     beforeEach(async () => {
-      await fsPromise.mkdir('rmdir');
-      await ensure(fsPromise, 'rmdir/$$$.$$$');
       await fsPromise.writeFile('rmdir/test.txt', 'TEST');
       await ensure(fsPromise, 'rmdir/test.txt');
     });
 
     afterEach(async () => {
-      try {
-        await fsPromise.unlink('rmdir/test.txt');
-      } catch (err) {
-        if (err.code !== 'ENOENT') {
-          throw err;
-        }
-      }
-
-      await ensureNot(fsPromise, 'rmdir/test.txt');
-
-      try {
-        await fsPromise.rmdir('rmdir');
-      } catch (err) {
-        if (err.code !== 'ENOENT') {
-          throw err;
-        }
-      }
-
-      await ensureNot(fsPromise, 'rmdir/$$$.$$$');
+      await ensureUnlinkIfExist(fsPromise, 'rmdir/test.txt');
     });
 
     it('should have created "rmdir" folder', async () => {
@@ -62,10 +51,15 @@ describe('rmdir', () => {
     });
 
     context('remove the file and subdirectory', () => {
-      beforeEach(async () => await fsPromise.unlink('rmdir/test.txt'));
+      beforeEach(async () => {
+        await ensureUnlinkIfExist(fsPromise, 'rmdir/test.txt');
+      });
 
       context('remove the directory', () => {
-        beforeEach(async () => await fsPromise.rmdir('rmdir'));
+        beforeEach(async () => {
+          await fsPromise.rmdir('rmdir');
+          await ensureNot(fsPromise, 'rmdir/$$$.$$$');
+        });
 
         it('should have removed the directory', async () => {
           try {
@@ -81,26 +75,12 @@ describe('rmdir', () => {
 
   context('with a subdirectory', () => {
     beforeEach(async () => {
-      await fsPromise.mkdir('rmdir');
       await fsPromise.mkdir('rmdir/dir');
+      await ensure(fsPromise, 'rmdir/dir/$$$.$$$');
     });
 
     afterEach(async () => {
-      try {
-        await fsPromise.rmdir('rmdir/dir');
-      } catch (err) {
-        if (err.code !== 'ENOENT') {
-          throw err;
-        }
-      }
-
-      try {
-        await fsPromise.rmdir('rmdir');
-      } catch (err) {
-        if (err.code !== 'ENOENT') {
-          throw err;
-        }
-      }
+      await ensureRmdirIfExist(fsPromise, 'rmdir/dir');
     });
 
     context('remove the directory', () => {
@@ -115,10 +95,16 @@ describe('rmdir', () => {
     });
 
     context('remove the subdirectory', () => {
-      beforeEach(async () => await fsPromise.rmdir('rmdir/dir'));
+      beforeEach(async () => {
+        await fsPromise.rmdir('rmdir/dir');
+        await ensureNot(fsPromise, 'rmdir/dir');
+      });
 
       context('remove the directory', () => {
-        beforeEach(async () => await fsPromise.rmdir('rmdir'));
+        beforeEach(async () => {
+          await fsPromise.rmdir('rmdir');
+          await ensureNot(fsPromise, 'rmdir');
+        });
 
         it('should have removed the directory', async () => {
           try {

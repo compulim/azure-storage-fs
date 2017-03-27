@@ -7,7 +7,7 @@ const { env } = process;
 const { promise: fsPromise } = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONTAINER);
 const PREFIX = env.BLOB_PREFIX ? env.BLOB_PREFIX + '/' : '';
 const TEST_FILENAME = PREFIX + 'snapshot.txt';
-const { ensure, ensureNot, unlinkIfExist } = require('./utils');
+const { ensure, ensureNot, ensureStat, unlinkIfExist } = require('./utils');
 const retry = require('promise-retry');
 
 describe('snapshot', () => {
@@ -17,7 +17,7 @@ describe('snapshot', () => {
     await ensure(fsPromise, TEST_FILENAME);
   });
 
-  afterEach(() => fsPromise.unlink(TEST_FILENAME));
+  afterEach(async () => await unlinkIfExist(fsPromise, TEST_FILENAME));
 
   describe('create a snapshot with version set to "2"', () => {
     let firstSnapshot;
@@ -48,21 +48,10 @@ describe('snapshot', () => {
       it('should returns "Content-Type" as "text/plain"', () => assert.equal(stat.contentSettings.contentType, 'text/plain'));
     });
 
-    describe.only('overwrite the file with new content', () => {
+    describe('overwrite the file with new content', () => {
       beforeEach(async () => {
         await fsPromise.writeFile(TEST_FILENAME, 'Aloha!', { contentSettings: { contentType: 'text/html' }, metadata: { version: '3' } });
-
-        await retry(async retry => {
-          try {
-            const stat = await fsPromise.stat(TEST_FILENAME, { metadata: true });
-
-            if (stat.metadata.version !== '3') {
-              throw new Error('metadata version is not 3');
-            }
-          } catch (err) {
-            retry(err);
-          }
-        });
+        await ensureStat(fsPromise, TEST_FILENAME, stat => stat.metadata.version === '3');
       });
 
       describe('when reading the file with snapshot ID', () => {
