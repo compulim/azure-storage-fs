@@ -15,12 +15,13 @@
   },
   "main": "index.js",
   "devDependencies": {
+    "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
     "node-fetch": "^1.6.3",
     "promise-retry": "^1.1.1"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "istanbul cover node_modules/mocha/bin/_mocha"
   },
   "keywords": [
     "azure",
