@@ -21,8 +21,8 @@
     "promise-retry": "^1.1.1"
   },
   "scripts": {
-    "cover:report": "istanbul report",
-    "test": "istanbul cover node_modules/mocha/bin/_mocha"
+    "cover:report": "istanbul report html",
+    "test": "istanbul test node_modules/mocha/bin/_mocha"
   },
   "keywords": [
     "azure",
