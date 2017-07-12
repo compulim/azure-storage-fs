@@ -2,8 +2,7 @@
 
 const assert = require('assert');
 const AzureBlobFS = require('../lib/AzureBlobFS');
-const config = require('./config');
-const { promise: fsPromise } = new AzureBlobFS(config.BLOB_ACCOUNT_NAME, config.BLOB_SECRET, config.BLOB_CONTAINER);
+const { promise: fsPromise } = new AzureBlobFS(process.env.BLOB_ACCOUNT_NAME, process.env.BLOB_SECRET, process.env.BLOB_CONTAINER);
 const helper = require('./testHelper')(fsPromise);
 
 describe('rmdir', () => {

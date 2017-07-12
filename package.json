@@ -22,7 +22,7 @@
   },
   "scripts": {
     "test": "mocha",
-    "test:vso": "npm test -- --reporter mocha-junit-reporter --timeout 10000"
+    "test:vso": "npm test -- --require ./test/configFromEnvFile --reporter mocha-junit-reporter --timeout 10000"
   },
   "keywords": [
     "azure",

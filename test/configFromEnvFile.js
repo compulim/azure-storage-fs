@@ -3,7 +3,9 @@
 const fs = require('fs');
 const path = require('path');
 
-module.exports =
+process.env = Object.assign(
+  {},
+  process.env,
   fs
     .readFileSync(path.join(__dirname, '../.env.local'), 'ucs2')
     .split(/(\r\n|\n)/)
@@ -11,10 +13,9 @@ module.exports =
       const [key, ...value] = line.split('=');
 
       if (key.trim()) {
-        json[key] = value.join('=');
+        json[key.trim()] = value.join('=');
       }
 
       return json;
-    }, {});
-
-console.log(module.exports);
+    }, {})
+);
