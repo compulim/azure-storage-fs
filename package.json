@@ -24,7 +24,8 @@
   },
   "scripts": {
     "test": "mocha",
-    "test:vso": "env-cmd .secret npm test -- --reporter mocha-junit-reporter --timeout 10000"
+    "test:vso": "env-cmd .secret npm test -- --reporter mocha-junit-reporter --timeout 10000",
+    "test:vso2": "env-cmd .secret SET BLOB"
   },
   "keywords": [
     "azure",
