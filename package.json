@@ -15,14 +15,13 @@
   },
   "main": "index.js",
   "devDependencies": {
+    "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
-    "mocha-junit-reporter": "^1.13.0",
     "node-fetch": "^1.6.3",
     "promise-retry": "^1.1.1"
   },
   "scripts": {
-    "test": "mocha",
-    "test:vso": "npm test -- --require ./test/configFromEnvFile --reporter mocha-junit-reporter --timeout 10000"
+    "test": "istanbul test node_modules/mocha/bin/_mocha"
   },
   "keywords": [
     "azure",
