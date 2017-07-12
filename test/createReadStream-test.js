@@ -2,8 +2,7 @@
 
 const assert = require('assert');
 const AzureBlobFS = require('../lib/AzureBlobFS');
-const { env } = process;
-const fs = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONTAINER);
+const fs = new AzureBlobFS(process.env.BLOB_ACCOUNT_NAME, process.env.BLOB_SECRET, process.env.BLOB_CONTAINER);
 const fsPromise = fs.promise;
 const helper = require('./testHelper')(fsPromise);
 

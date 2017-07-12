@@ -16,11 +16,13 @@
   "main": "index.js",
   "devDependencies": {
     "mocha": "^3.2.0",
+    "mocha-junit-reporter": "^1.13.0",
     "node-fetch": "^1.6.3",
     "promise-retry": "^1.1.1"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "test:vso": "npm test -- --require ./test/configFromEnvFile --reporter mocha-junit-reporter --timeout 10000"
   },
   "keywords": [
     "azure",

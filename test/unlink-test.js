@@ -2,8 +2,7 @@
 
 const assert = require('assert');
 const AzureBlobFS = require('../lib/AzureBlobFS');
-const { env } = process;
-const fs = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONTAINER);
+const fs = new AzureBlobFS(process.env.BLOB_ACCOUNT_NAME, process.env.BLOB_SECRET, process.env.BLOB_CONTAINER);
 const fsPromise = fs.promise;
 const fetch = require('node-fetch');
 const helper = require('./testHelper')(fsPromise);
@@ -36,7 +35,7 @@ describe('unlink', () => {
     it('should return 404 on GET', async () => {
       const now = Date.now();
       const token = fs.sas(FILENAME, { expiry: now + 15 * 60000 });
-      const url = `https://${ env.BLOB_ACCOUNT_NAME }.blob.core.windows.net/${ env.BLOB_CONTAINER }/${ FILENAME }?${ token }`;
+      const url = `https://${ process.env.BLOB_ACCOUNT_NAME }.blob.core.windows.net/${ process.env.BLOB_CONTAINER }/${ FILENAME }?${ token }`;
       const res = await fetch(url);
 
       assert.equal(404, res.status);

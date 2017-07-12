@@ -3,8 +3,7 @@
 const assert = require('assert');
 const AzureBlobFS = require('../lib/AzureBlobFS');
 const stream = require('stream');
-const { env } = process;
-const { promise: fsPromise } = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONTAINER);
+const { promise: fsPromise } = new AzureBlobFS(process.env.BLOB_ACCOUNT_NAME, process.env.BLOB_SECRET, process.env.BLOB_CONTAINER);
 const retry = require('promise-retry');
 const helper = require('./testHelper')(fsPromise);
 
@@ -108,13 +107,13 @@ describe('snapshot', () => {
             id             : firstSnapshot,
             metadata       : { version: '2' },
             size           : 13,
-            url            : `https://${ env.BLOB_ACCOUNT_NAME }.blob.core.windows.net/${ env.BLOB_CONTAINER }/${ FILENAME }?snapshot=${ encodeURIComponent(firstSnapshot) }`
+            url            : `https://${ process.env.BLOB_ACCOUNT_NAME }.blob.core.windows.net/${ process.env.BLOB_CONTAINER }/${ FILENAME }?snapshot=${ encodeURIComponent(firstSnapshot) }`
           }, {
             contentSettings: { contentType: 'text/html' },
             id             : undefined,
             metadata       : { version: '3' },
             size           : 6,
-            url            : `https://${ env.BLOB_ACCOUNT_NAME }.blob.core.windows.net/${ env.BLOB_CONTAINER }/${ FILENAME }`
+            url            : `https://${ process.env.BLOB_ACCOUNT_NAME }.blob.core.windows.net/${ process.env.BLOB_CONTAINER }/${ FILENAME }`
           }]);
         });
       });
