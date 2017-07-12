@@ -1,7 +1,7 @@
 azure-storage-fs
 ================
 
-[![npm version](https://badge.fury.io/js/azure-storage-fs.svg)](https://badge.fury.io/js/azure-storage-fs) [![Node.js dependencies](https://david-dm.org/compulim/azure-storage-fs.svg)](https://david-dm.org/compulim/azure-storage-fs) [![npm downloads](https://img.shields.io/npm/dm/azure-storage-fs.svg)](https://img.shields.io/npm/dm/azure-storage-fs.svg)
+[![npm version](https://badge.fury.io/js/azure-storage-fs.svg)](https://badge.fury.io/js/azure-storage-fs) [![build quality](https://compulim.visualstudio.com/_apis/public/build/definitions/57f7f79f-d0e1-4cda-ad67-26141fc4a6e4/1/badge)](https://compulim.visualstudio.com/_apis/public/build/definitions/57f7f79f-d0e1-4cda-ad67-26141fc4a6e4/1/badge) [![Node.js dependencies](https://david-dm.org/compulim/azure-storage-fs.svg)](https://david-dm.org/compulim/azure-storage-fs) [![npm downloads](https://img.shields.io/npm/dm/azure-storage-fs.svg)](https://img.shields.io/npm/dm/azure-storage-fs.svg)
 
 A drop-in "fs" replacement for accessing Azure Storage with Node.js "fs" API.
 
