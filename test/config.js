@@ -16,3 +16,5 @@ module.exports =
 
       return json;
     }, {});
+
+console.log(module.exports);
