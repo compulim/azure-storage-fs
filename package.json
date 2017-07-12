@@ -9,7 +9,6 @@
   "license": "MIT",
   "dependencies": {
     "bluebird": "^3.5.0",
-    "env-cmd": "^5.1.0",
     "mocha-junit-reporter": "^1.13.0"
   },
   "peerDependencies": {
@@ -23,8 +22,7 @@
   },
   "scripts": {
     "test": "mocha",
-    "test:vso": "env-cmd .env.local npm test -- --reporter mocha-junit-reporter --timeout 10000",
-    "test:vso2": "env-cmd .env.local SET BLOB"
+    "test:vso": "npm test -- --reporter mocha-junit-reporter --timeout 10000"
   },
   "keywords": [
     "azure",

@@ -3,7 +3,7 @@
 const assert = require('assert');
 const AzureBlobFS = require('../lib/AzureBlobFS');
 const { env } = process;
-const { promise: fsPromise } = new AzureBlobFS(env.BLOB_ACCOUNT_NAME, env.BLOB_SECRET, env.BLOB_CONTAINER);
+const { promise: fsPromise } = new AzureBlobFS(env.NPM_CONFIG_BLOB_ACCOUNT_NAME, env.NPM_CONFIG_BLOB_SECRET, env.NPM_CONFIG_BLOB_CONTAINER);
 const helper = require('./testHelper')(fsPromise);
 
 const FILENAME = 'metadata.txt';
