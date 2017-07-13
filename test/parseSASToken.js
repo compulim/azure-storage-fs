@@ -77,34 +77,88 @@ describe('Parse SAS token', () => {
   });
 
   context('parse query', () => {
-    const actual = parseSASToken('?' + qs.stringify({
-      se: '2099-12-31T23:59:59.999Z',
-      st: '2000-01-01T00:00:00.000Z',
-      sip: '192.168.0.1',
-      sp: 'craw',
-      spr: 'http,https',
-      sr: 'b'
-    }));
+    it('should parse full token', () => {
+      const actual = parseSASToken('?' + qs.stringify({
+        se: '2099-12-31T23:59:59.999Z',
+        st: '2000-01-01T00:00:00.000Z',
+        sip: '192.168.0.1',
+        sp: 'craw',
+        spr: 'http,https',
+        sr: 'b'
+      }));
 
-    const expected = {
-      AccessPolicy: {
-        Expiry: new Date(Date.UTC(2099, 11, 31, 23, 59, 59, 999)),
-        Start : new Date(Date.UTC(2000, 0, 1)),
-        IPAddressOrRange: '192.168.0.1',
-        Protocols: Protocols.HTTPSORHTTP,
-        Permissions: [
-          Permissions.CREATE,
-          Permissions.READ,
-          Permissions.ADD,
-          Permissions.WRITE
-        ].join(''),
-        ResourceTypes: Resources.OBJECT
-      }
-    };
+      const expected = {
+        AccessPolicy: {
+          Expiry: new Date(Date.UTC(2099, 11, 31, 23, 59, 59, 999)),
+          Start : new Date(Date.UTC(2000, 0, 1)),
+          IPAddressOrRange: '192.168.0.1',
+          Protocols: Protocols.HTTPSORHTTP,
+          Permissions: [
+            Permissions.CREATE,
+            Permissions.READ,
+            Permissions.ADD,
+            Permissions.WRITE
+          ].join(''),
+          ResourceTypes: Resources.OBJECT
+        }
+      };
 
-    assert.deepEqual(
-      actual,
-      expected
-    );
+      assert.deepEqual(
+        actual,
+        expected
+      );
+    });
+
+    it('should parse token without protocol', () => {
+      assert.deepEqual(
+        parseSASToken('?' + qs.stringify({
+          se: '2099-12-31T23:59:59.999Z',
+          st: '2000-01-01T00:00:00.000Z',
+          sip: '192.168.0.1',
+          sp: 'craw',
+          sr: 'b'
+        })),
+        {
+          AccessPolicy: {
+            Expiry: new Date(Date.UTC(2099, 11, 31, 23, 59, 59, 999)),
+            Start : new Date(Date.UTC(2000, 0, 1)),
+            IPAddressOrRange: '192.168.0.1',
+            Protocols: null,
+            Permissions: [
+              Permissions.CREATE,
+              Permissions.READ,
+              Permissions.ADD,
+              Permissions.WRITE
+            ].join(''),
+            ResourceTypes: Resources.OBJECT
+          }
+        }
+      );
+    });
+
+    it('should parse token without start/expiry', () => {
+      assert.deepEqual(
+        parseSASToken('?' + qs.stringify({
+          sip: '192.168.0.1',
+          sp: 'craw',
+          sr: 'b'
+        })),
+        {
+          AccessPolicy: {
+            Expiry: null,
+            Start : null,
+            IPAddressOrRange: '192.168.0.1',
+            Protocols: null,
+            Permissions: [
+              Permissions.CREATE,
+              Permissions.READ,
+              Permissions.ADD,
+              Permissions.WRITE
+            ].join(''),
+            ResourceTypes: Resources.OBJECT
+          }
+        }
+      );
+    });
   });
 });
