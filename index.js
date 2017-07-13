@@ -3,5 +3,5 @@
 const AzureBlobFS = require('./lib/AzureBlobFS');
 
 module.exports = {
-  blob: (account, secret, container) => new AzureBlobFS(account, secret, container)
+  blob: (account, secretOrSAS, container, options) => new AzureBlobFS(account, secretOrSAS, container, options)
 };

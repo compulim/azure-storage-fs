@@ -9,5 +9,5 @@ const fs = require('../index').blob(
 fs.readdir('filebucket', (err, data) => {
   if (err) { return console.error('failed'); }
 
-  console.log(data.toString());
+  console.log(data);
 });
