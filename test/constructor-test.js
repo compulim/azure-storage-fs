@@ -8,7 +8,7 @@ const azureStorage = require('azure-storage');
 
 const FILENAME = 'constructor.txt';
 
-describe.only('constructor', () => {
+describe('constructor', () => {
   let fs, helper;
 
   before(async () => {
