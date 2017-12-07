@@ -1,9 +1,10 @@
 'use strict';
 
+require('dotenv').config();
+
 const assert = require('assert');
-const AzureBlobFS = require('../lib/AzureBlobFS');
-const { promise: fsPromise } = new AzureBlobFS(process.env.BLOB_ACCOUNT_NAME, process.env.BLOB_SECRET, process.env.BLOB_CONTAINER);
-const helper = require('./testHelper')(fsPromise);
+const fs     = require('./createAzureBlobFS');
+const helper = require('./testHelper')(fs.promise);
 
 const FILENAME = 'metadata.txt';
 
@@ -20,18 +21,18 @@ describe('setMetadata', () => {
   context('when reading metadata', () => {
     let stat;
 
-    beforeEach(async () => stat = await fsPromise.stat(FILENAME, { metadata: true }));
+    beforeEach(async () => stat = await fs.promise.stat(FILENAME, { metadata: true }));
 
     it('should return metadata', () => assert.deepEqual(stat.metadata, { hello: 'Aloha!' }));
   });
 
   context('when modifying metadata', () => {
-    beforeEach(async () => await fsPromise.setMetadata(FILENAME, { hello: 'World!' }));
+    beforeEach(async () => await fs.promise.setMetadata(FILENAME, { hello: 'World!' }));
 
     context('then reading metadata', () => {
       let stat;
 
-      beforeEach(async () => stat = await fsPromise.stat(FILENAME, { metadata: true }));
+      beforeEach(async () => stat = await fs.promise.stat(FILENAME, { metadata: true }));
 
       it('should return new metadata', () => assert.deepEqual(stat.metadata, { hello: 'World!' }));
     });

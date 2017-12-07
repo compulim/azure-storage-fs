@@ -1,11 +1,11 @@
 'use strict';
 
+require('dotenv').config();
+
 const assert = require('assert');
-const AzureBlobFS = require('../lib/AzureBlobFS');
-const fs = new AzureBlobFS(process.env.BLOB_ACCOUNT_NAME, process.env.BLOB_SECRET, process.env.BLOB_CONTAINER);
-const fsPromise = fs.promise;
-const fetch = require('node-fetch');
-const helper = require('./testHelper')(fsPromise);
+const fetch  = require('node-fetch');
+const fs     = require('./createAzureBlobFS');
+const helper = require('./testHelper')(fs.promise);
 
 const FILENAME = 'writeFile.txt';
 
@@ -13,7 +13,7 @@ describe('writeFile', () => {
   context(`when write "TEST" to "${ FILENAME }"`, () => {
     beforeEach(async () => {
       await helper.ensureUnlinkIfExists(FILENAME);
-      await fsPromise.writeFile(FILENAME, 'TEST', { contentSettings: { contentType: 'text/plain' }, metadata: { hello: 'Aloha!' } });
+      await fs.promise.writeFile(FILENAME, 'TEST', { contentSettings: { contentType: 'text/plain' }, metadata: { hello: 'Aloha!' } });
     });
 
     afterEach(async () => await helper.ensureUnlinkIfExists(FILENAME));
@@ -21,7 +21,7 @@ describe('writeFile', () => {
     it('should have wrote "TEST" to the file', async () => {
       const now = Date.now();
       const token = fs.sas(FILENAME, { expiry: now + 15 * 60000, flag: 'r' });
-      const url = `https://${ process.env.BLOB_ACCOUNT_NAME }.blob.core.windows.net/${ process.env.BLOB_CONTAINER }/writeFile.txt?${ token }`;
+      const url = `https://${ process.env.AZURE_STORAGE_ACCOUNT }.blob.core.windows.net/${ process.env.TEST_CONTAINER }/writeFile.txt?${ token }`;
       const res = await fetch(url);
 
       assert.equal(res.status, 200);
@@ -35,7 +35,7 @@ describe('writeFile', () => {
       let stat;
 
       beforeEach(async () => {
-        stat = await fsPromise.stat(FILENAME, { metadata: true });
+        stat = await fs.promise.stat(FILENAME, { metadata: true });
       });
 
       it('should have a file size of 4 bytes', () => {

@@ -1,10 +1,10 @@
 'use strict'
 
+require('dotenv').config();
+
 const assert = require('assert');
-const AzureBlobFS = require('../lib/AzureBlobFS');
-const fs = new AzureBlobFS(process.env.BLOB_ACCOUNT_NAME, process.env.BLOB_SECRET, process.env.BLOB_CONTAINER);
-const fsPromise = fs.promise;
-const helper = require('./testHelper')(fsPromise);
+const fs     = require('./createAzureBlobFS');
+const helper = require('./testHelper')(fs.promise);
 
 const FILENAME = 'createReadStream.txt';
 
