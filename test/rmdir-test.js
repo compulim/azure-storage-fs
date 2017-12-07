@@ -1,22 +1,26 @@
 'use strict';
 
 const assert = require('assert');
-const AzureBlobFS = require('../lib/AzureBlobFS');
-const { promise: fsPromise } = new AzureBlobFS(process.env.BLOB_ACCOUNT_NAME, process.env.BLOB_SECRET, process.env.BLOB_CONTAINER);
-const helper = require('./testHelper')(fsPromise);
 
 describe('rmdir', () => {
+  let fs, helper;
+
+  before(async () => {
+    fs     = await require('./createAzureBlobFS')();
+    helper = require('./testHelper')(fs.promise);
+  });
+
   beforeEach(async () => {
     await helper.ensureUnlinkIfExists('rmdir/test.txt');
     await helper.ensureRmdirIfExists('rmdir/dir');
     await helper.ensureRmdirIfExists('rmdir');
 
-    await fsPromise.mkdir('rmdir');
+    await fs.promise.mkdir('rmdir');
     await helper.ensureExists('rmdir');
   });
 
   it('should have created "rmdir" folder', async () => {
-    const stat = await fsPromise.stat('rmdir');
+    const stat = await fs.promise.stat('rmdir');
 
     assert.equal(true, stat.isDirectory());
   });
@@ -31,7 +35,7 @@ describe('rmdir', () => {
     });
 
     it('should have create "rmdir/test.txt" file', async () => {
-      const stat = await fsPromise.stat('rmdir/test.txt');
+      const stat = await fs.promise.stat('rmdir/test.txt');
 
       assert.equal(true, !stat.isDirectory());
       assert.equal(4, stat.size);
@@ -40,7 +44,7 @@ describe('rmdir', () => {
     context('removing the directory', () => {
       it('should throw ENOTEMPTY', async () => {
         try {
-          await fsPromise.rmdir('rmdir');
+          await fs.promise.rmdir('rmdir');
           throw new Error('did not throw ENOTEMPTY');
         } catch (err) {
           assert.equal('ENOTEMPTY', err.code);
@@ -67,7 +71,7 @@ describe('rmdir', () => {
 
   context('with a subdirectory', () => {
     beforeEach(async () => {
-      await fsPromise.mkdir('rmdir/dir');
+      await fs.promise.mkdir('rmdir/dir');
       await helper.ensureExists('rmdir/dir');
     });
 
@@ -78,7 +82,7 @@ describe('rmdir', () => {
     context('remove the root directory', () => {
       it('should throw "ENOTEMPTY"', async () => {
         try {
-          await fsPromise.rmdir('rmdir');
+          await fs.promise.rmdir('rmdir');
           throw new Error('did not throw ENOTEMPTY');
         } catch (err) {
           assert.equal('ENOTEMPTY', err.code);
@@ -88,13 +92,13 @@ describe('rmdir', () => {
 
     context('remove the subdirectory first', () => {
       beforeEach(async () => {
-        await fsPromise.rmdir('rmdir/dir');
+        await fs.promise.rmdir('rmdir/dir');
         await helper.ensureNotExists('rmdir/dir');
       });
 
       context('then remove the root directory', () => {
         beforeEach(async () => {
-          await fsPromise.rmdir('rmdir');
+          await fs.promise.rmdir('rmdir');
         });
 
         it('should have removed everything', async () => {

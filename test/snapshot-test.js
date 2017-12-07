@@ -1,15 +1,21 @@
 'use strict'
 
+require('dotenv').config();
+
 const assert = require('assert');
-const AzureBlobFS = require('../lib/AzureBlobFS');
+const retry  = require('promise-retry');
 const stream = require('stream');
-const { promise: fsPromise } = new AzureBlobFS(process.env.BLOB_ACCOUNT_NAME, process.env.BLOB_SECRET, process.env.BLOB_CONTAINER);
-const retry = require('promise-retry');
-const helper = require('./testHelper')(fsPromise);
 
 const FILENAME = 'snapshot.txt';
 
 describe('snapshot', () => {
+  let fs, helper;
+
+  before(async () => {
+    fs     = await require('./createAzureBlobFS')();
+    helper = require('./testHelper')(fs.promise);
+  });
+
   beforeEach(async () => {
     await helper.ensureUnlinkIfExists(FILENAME);
     await helper.ensureWriteFile(FILENAME, 'Hello, World!', { contentSettings: { contentType: 'text/plain' }, metadata: { version: '1' } });
@@ -21,14 +27,14 @@ describe('snapshot', () => {
     let firstSnapshot;
 
     beforeEach(async () => {
-      firstSnapshot = await fsPromise.snapshot(FILENAME, { metadata: { version: '2' } });
+      firstSnapshot = await fs.promise.snapshot(FILENAME, { metadata: { version: '2' } });
     });
 
     describe('when stat-ing without specifying snapshot ID', () => {
       let stat;
 
       beforeEach(async () => {
-        stat = await fsPromise.stat(FILENAME, { metadata: true });
+        stat = await fs.promise.stat(FILENAME, { metadata: true });
       });
 
       it('should returns version equals to "1"', () => assert.deepEqual(stat.metadata, { version: '1' }));
@@ -39,7 +45,7 @@ describe('snapshot', () => {
       let stat;
 
       beforeEach(async () => {
-        stat = await fsPromise.stat(FILENAME, { metadata: true, snapshot: firstSnapshot });
+        stat = await retry(retry => fs.promise.stat(FILENAME, { metadata: true, snapshot: firstSnapshot }), { minTimeout: 100 });
       });
 
       it('should returns version equals to "2"', () => assert.deepEqual(stat.metadata, { version: '2' }));
@@ -48,7 +54,7 @@ describe('snapshot', () => {
 
     describe('overwrite the file with new content', () => {
       beforeEach(async () => {
-        await fsPromise.writeFile(FILENAME, 'Aloha!', { contentSettings: { contentType: 'text/html' }, metadata: { version: '3' } });
+        await fs.promise.writeFile(FILENAME, 'Aloha!', { contentSettings: { contentType: 'text/html' }, metadata: { version: '3' } });
         await helper.ensureStat(FILENAME, stat => stat.metadata.version === '3');
       });
 
@@ -56,7 +62,7 @@ describe('snapshot', () => {
         let content;
 
         beforeEach(async () => {
-          content = await fsPromise.readFile(FILENAME, { snapshot: firstSnapshot });
+          content = await fs.promise.readFile(FILENAME, { snapshot: firstSnapshot });
         });
 
         it('should return original content', () => assert.equal('Hello, World!', content));
@@ -66,7 +72,7 @@ describe('snapshot', () => {
         let content;
 
         beforeEach(async () => {
-          content = await fsPromise.readFile(FILENAME);
+          content = await fs.promise.readFile(FILENAME);
         });
 
         it('should return the new content', () => assert.equal('Aloha!', content));
@@ -76,7 +82,7 @@ describe('snapshot', () => {
         let stat;
 
         beforeEach(async () => {
-          stat = await fsPromise.stat(FILENAME, { metadata: true, snapshot: firstSnapshot });
+          stat = await fs.promise.stat(FILENAME, { metadata: true, snapshot: firstSnapshot });
         });
 
         it('should return version equals to "2"', () => assert.deepEqual(stat.metadata, { version: '2' }));
@@ -87,7 +93,7 @@ describe('snapshot', () => {
         let stat;
 
         beforeEach(async () => {
-          stat = await fsPromise.stat(FILENAME, { metadata: true, snapshot: true });
+          stat = await fs.promise.stat(FILENAME, { metadata: true, snapshot: true });
         });
 
         it('should return version equals to "3"', () => assert.deepEqual(stat.metadata, { version: '3' }));
@@ -107,13 +113,13 @@ describe('snapshot', () => {
             id             : firstSnapshot,
             metadata       : { version: '2' },
             size           : 13,
-            url            : `https://${ process.env.BLOB_ACCOUNT_NAME }.blob.core.windows.net/${ process.env.BLOB_CONTAINER }/${ FILENAME }?snapshot=${ encodeURIComponent(firstSnapshot) }`
+            url            : `https://${ process.env.AZURE_STORAGE_ACCOUNT }.blob.core.windows.net/${ process.env.TEST_CONTAINER }/${ FILENAME }?snapshot=${ encodeURIComponent(firstSnapshot) }`
           }, {
             contentSettings: { contentType: 'text/html' },
             id             : undefined,
             metadata       : { version: '3' },
             size           : 6,
-            url            : `https://${ process.env.BLOB_ACCOUNT_NAME }.blob.core.windows.net/${ process.env.BLOB_CONTAINER }/${ FILENAME }`
+            url            : `https://${ process.env.AZURE_STORAGE_ACCOUNT }.blob.core.windows.net/${ process.env.TEST_CONTAINER }/${ FILENAME }`
           }]);
         });
       });

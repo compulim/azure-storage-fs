@@ -1,13 +1,17 @@
 'use strict'
 
 const assert = require('assert');
-const AzureBlobFS = require('../lib/AzureBlobFS');
-const { promise: fsPromise } = new AzureBlobFS(process.env.BLOB_ACCOUNT_NAME, process.env.BLOB_SECRET, process.env.BLOB_CONTAINER);
-const helper = require('./testHelper')(fsPromise);
 
 const FILENAME = 'readFile.txt';
 
 describe('readFile', () => {
+  let fs, helper;
+
+  before(async () => {
+    fs     = await require('./createAzureBlobFS')();
+    helper = require('./testHelper')(fs.promise);
+  });
+
   beforeEach(async () => {
     await helper.ensureUnlinkIfExists(FILENAME);
     await helper.ensureWriteFile(FILENAME, 'Hello, World!');
@@ -21,7 +25,7 @@ describe('readFile', () => {
     let content;
 
     beforeEach(async () => {
-      content = await fsPromise.readFile(FILENAME);
+      content = await fs.promise.readFile(FILENAME);
     });
 
     it('should be of type Buffer', () => {

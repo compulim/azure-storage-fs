@@ -11,10 +11,11 @@
     "bluebird": "^3.5.0"
   },
   "peerDependencies": {
-    "azure-storage": "^2.1.0"
+    "azure-storage": "^2.6.0"
   },
   "main": "index.js",
   "devDependencies": {
+    "dotenv": "^4.0.0",
     "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
     "node-fetch": "^1.6.3",

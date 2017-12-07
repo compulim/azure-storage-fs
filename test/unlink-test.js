@@ -1,15 +1,20 @@
 'use strict';
 
+require('dotenv').config();
+
 const assert = require('assert');
-const AzureBlobFS = require('../lib/AzureBlobFS');
-const fs = new AzureBlobFS(process.env.BLOB_ACCOUNT_NAME, process.env.BLOB_SECRET, process.env.BLOB_CONTAINER);
-const fsPromise = fs.promise;
-const fetch = require('node-fetch');
-const helper = require('./testHelper')(fsPromise);
+const fetch  = require('node-fetch');
 
 const FILENAME = 'unlink.txt';
 
 describe('unlink', () => {
+  let fs, helper;
+
+  before(async () => {
+    fs     = await require('./createAzureBlobFS')();
+    helper = require('./testHelper')(fs.promise);
+  });
+
   beforeEach(async () => {
     await helper.ensureUnlinkIfExists(FILENAME);
     await helper.ensureWriteFile(FILENAME, 'TEST');
@@ -19,13 +24,13 @@ describe('unlink', () => {
 
   context('when deleting the file', () => {
     beforeEach(async () => {
-      await fsPromise.unlink(FILENAME);
+      await fs.promise.unlink(FILENAME);
       await helper.ensureNotExists(FILENAME);
     });
 
     it('should have deleted the file', async () => {
       try {
-        await fsPromise.stat(FILENAME);
+        await fs.promise.stat(FILENAME);
         throw new Error();
       } catch (err) {
         assert.equal('ENOENT', err.code);
@@ -35,7 +40,7 @@ describe('unlink', () => {
     it('should return 404 on GET', async () => {
       const now = Date.now();
       const token = fs.sas(FILENAME, { expiry: now + 15 * 60000 });
-      const url = `https://${ process.env.BLOB_ACCOUNT_NAME }.blob.core.windows.net/${ process.env.BLOB_CONTAINER }/${ FILENAME }?${ token }`;
+      const url = `https://${ process.env.AZURE_STORAGE_ACCOUNT }.blob.core.windows.net/${ process.env.TEST_CONTAINER }/${ FILENAME }?${ token }`;
       const res = await fetch(url);
 
       assert.equal(404, res.status);
