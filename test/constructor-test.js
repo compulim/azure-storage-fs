@@ -8,7 +8,7 @@ const azureStorage = require('azure-storage');
 
 const FILENAME = 'constructor.txt';
 
-describe.only('constructor', () => {
+describe('constructor', () => {
   describe('construct using BlobService object', () => {
     let fs, helper;
 
