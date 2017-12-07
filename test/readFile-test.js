@@ -1,14 +1,17 @@
 'use strict'
 
-require('dotenv').config();
-
 const assert = require('assert');
-const fs     = require('./createAzureBlobFS');
-const helper = require('./testHelper')(fs.promise);
 
 const FILENAME = 'readFile.txt';
 
 describe('readFile', () => {
+  let fs, helper;
+
+  before(async () => {
+    fs     = await require('./createAzureBlobFS')();
+    helper = require('./testHelper')(fs.promise);
+  });
+
   beforeEach(async () => {
     await helper.ensureUnlinkIfExists(FILENAME);
     await helper.ensureWriteFile(FILENAME, 'Hello, World!');

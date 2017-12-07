@@ -4,12 +4,17 @@ require('dotenv').config();
 
 const assert = require('assert');
 const fetch  = require('node-fetch');
-const fs     = require('./createAzureBlobFS');
-const helper = require('./testHelper')(fs.promise);
 
 const FILENAME = 'unlink.txt';
 
 describe('unlink', () => {
+  let fs, helper;
+
+  before(async () => {
+    fs     = await require('./createAzureBlobFS')();
+    helper = require('./testHelper')(fs.promise);
+  });
+
   beforeEach(async () => {
     await helper.ensureUnlinkIfExists(FILENAME);
     await helper.ensureWriteFile(FILENAME, 'TEST');

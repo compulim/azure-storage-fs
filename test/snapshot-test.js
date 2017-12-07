@@ -3,14 +3,19 @@
 require('dotenv').config();
 
 const assert = require('assert');
-const fs     = require('./createAzureBlobFS');
-const helper = require('./testHelper')(fs.promise);
 const retry  = require('promise-retry');
 const stream = require('stream');
 
 const FILENAME = 'snapshot.txt';
 
 describe('snapshot', () => {
+  let fs, helper;
+
+  before(async () => {
+    fs     = await require('./createAzureBlobFS')();
+    helper = require('./testHelper')(fs.promise);
+  });
+
   beforeEach(async () => {
     await helper.ensureUnlinkIfExists(FILENAME);
     await helper.ensureWriteFile(FILENAME, 'Hello, World!', { contentSettings: { contentType: 'text/plain' }, metadata: { version: '1' } });
@@ -40,7 +45,7 @@ describe('snapshot', () => {
       let stat;
 
       beforeEach(async () => {
-        stat = await fs.promise.stat(FILENAME, { metadata: true, snapshot: firstSnapshot });
+        stat = await retry(retry => fs.promise.stat(FILENAME, { metadata: true, snapshot: firstSnapshot }), { minTimeout: 100 });
       });
 
       it('should returns version equals to "2"', () => assert.deepEqual(stat.metadata, { version: '2' }));

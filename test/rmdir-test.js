@@ -1,12 +1,15 @@
 'use strict';
 
-require('dotenv').config();
-
 const assert = require('assert');
-const fs     = require('./createAzureBlobFS');
-const helper = require('./testHelper')(fs.promise);
 
 describe('rmdir', () => {
+  let fs, helper;
+
+  before(async () => {
+    fs     = await require('./createAzureBlobFS')();
+    helper = require('./testHelper')(fs.promise);
+  });
+
   beforeEach(async () => {
     await helper.ensureUnlinkIfExists('rmdir/test.txt');
     await helper.ensureRmdirIfExists('rmdir/dir');
