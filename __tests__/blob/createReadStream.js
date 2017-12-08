@@ -1,7 +1,5 @@
 'use strict'
 
-const assert = require('assert');
-
 const FILENAME = 'createReadStream.txt';
 
 describe('createReadStream', () => {
@@ -19,24 +17,11 @@ describe('createReadStream', () => {
     await helper.ensureUnlinkIfExists(FILENAME);
   });
 
-  describe('create a stream', () => {
-    let readStream;
+  test('should return the content of the file', async () => {
+    const readStream = fs.createReadStream(FILENAME);
+    const content = await readAll(readStream);
 
-    beforeEach(() => {
-      readStream = fs.createReadStream(FILENAME);
-    });
-
-    describe('dump the stream', () => {
-      let content;
-
-      beforeEach(async () => {
-        content = await readAll(readStream);
-      });
-
-      test('should return the content of the file', () => {
-        assert.equal(content.toString(), 'Hello, World!');
-      });
-    });
+    expect(content.toString()).toBe('Hello, World!');
   });
 });
 

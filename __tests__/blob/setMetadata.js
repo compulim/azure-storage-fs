@@ -1,7 +1,5 @@
 'use strict';
 
-const assert = require('assert');
-
 const FILENAME = 'metadata.txt';
 
 describe('setMetadata', () => {
@@ -19,23 +17,17 @@ describe('setMetadata', () => {
     await helper.ensureUnlinkIfExists(FILENAME);
   });
 
-  describe('when reading metadata', () => {
-    let stat;
+  test('when reading metadata should return metadata', async () => {
+    const { metadata } = await fs.promise.stat(FILENAME, { metadata: true });
 
-    beforeEach(async () => stat = await fs.promise.stat(FILENAME, { metadata: true }));
-
-    test('should return metadata', () => assert.deepEqual(stat.metadata, { hello: 'Aloha!' }));
+    expect(metadata).toEqual({ hello: 'Aloha!' });
   });
 
-  describe('when modifying metadata', () => {
-    beforeEach(async () => await fs.promise.setMetadata(FILENAME, { hello: 'World!' }));
+  test('when modifying metadata then reading metadata should return new metadata', async () => {
+    await fs.promise.setMetadata(FILENAME, { hello: 'World!' });
 
-    describe('then reading metadata', () => {
-      let stat;
+    const { metadata } = await fs.promise.stat(FILENAME, { metadata: true });
 
-      beforeEach(async () => stat = await fs.promise.stat(FILENAME, { metadata: true }));
-
-      test('should return new metadata', () => assert.deepEqual(stat.metadata, { hello: 'World!' }));
-    });
+    expect(metadata).toEqual({ hello: 'World!' });
   });
 });

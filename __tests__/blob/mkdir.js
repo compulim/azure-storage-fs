@@ -1,7 +1,5 @@
 'use strict';
 
-const assert = require('assert');
-
 describe('mkdir', () => {
   let fs, helper;
 
@@ -21,19 +19,10 @@ describe('mkdir', () => {
   test('should created the directory', async () => {
     const stat = await fs.promise.stat('mkdir');
 
-    assert.equal(true, stat.isDirectory());
+    expect(stat.isDirectory()).toBe(true);
   });
 
-  describe('recreate the existing directory', () => {
-    test('should throw EEXIST', async () => {
-      try {
-        await fs.promise.mkdir('mkdir');
-        throw new Error('recreate directory should not success');
-      } catch (err) {
-        if (err.code !== 'EEXIST') {
-          throw err;
-        }
-      }
-    });
+  test('recreate existing directory should throw EEXIST', () => {
+    return expect(fs.promise.mkdir('mkdir')).rejects.toHaveProperty('code', 'EEXIST');
   });
 });
