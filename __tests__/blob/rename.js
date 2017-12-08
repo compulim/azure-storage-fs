@@ -2,6 +2,7 @@
 
 const FILENAME1 = 'rename1.txt';
 const FILENAME2 = 'rename2.txt';
+const FILENAME3 = 'rename3.txt';
 
 describe('rename', () => {
   let fs, helper;
@@ -28,5 +29,16 @@ describe('rename', () => {
     const buffer = await fs.promise.readFile(FILENAME2);
 
     expect(buffer.toString()).toBe('Hello, World!');
+  });
+
+  test('rename a non-exist file', async () => {
+    expect(fs.promise.rename(FILENAME2, FILENAME3)).rejects.toHaveProperty('code', 'ENOENT');
+  });
+
+  test('rename to an existing file', async () => {
+    await helper.ensureWriteFile(FILENAME1, 'Hello, World!');
+    await helper.ensureWriteFile(FILENAME2, 'Hello, World!');
+
+    expect(fs.promise.rename(FILENAME1, FILENAME2)).rejects.toHaveProperty('code', 'EEXIST');
   });
 });
