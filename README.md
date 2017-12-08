@@ -171,6 +171,11 @@ In future, we plan to support Azure Storage File, which is another file storage 
 
 ## Changelog
 
+vNext
+---
+
+* Bring your own `BlobService`
+
 0.3.1 (2017-12-06)
 ---
 
