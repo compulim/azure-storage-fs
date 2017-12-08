@@ -21,6 +21,18 @@ fs.readFile('helloworld.txt', (err, data) => {
 });
 ```
 
+#### Go advanced mode
+
+If you want to bring your own `BlobService` and prefer a Promise interface like [`mz/fs`](https://npmjs.com/packages/mz).
+
+```js
+const { createBlobService } = require('azure-storage');
+const fs = require('azure-storage-fs').blob(createBlobService(), container).promise;
+const data = await fs.readFile('helloworld.txt');
+
+console.log(data);
+```
+
 ### Integration with ftpd
 
 [`ftpd`](https://www.npmjs.com/package/ftpd) supports custom "fs" implementation and `azure-storage-fs` is designed to be a "fs" provider for `ftpd`.
@@ -158,6 +170,11 @@ Snapshot is supported and snapshot ID can be specified for most read APIs. `stat
 In future, we plan to support Azure Storage File, which is another file storage service accessible thru HTTP interface and SMB on Azure.
 
 ## Changelog
+
+0.3.1 (2017-12-06)
+---
+
+* Fix not working on Linux due to file name capitalization
 
 0.3.0 (2017-01-16)
 ---
