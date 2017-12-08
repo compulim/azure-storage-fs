@@ -1,7 +1,5 @@
 'use strict'
 
-const assert = require('assert');
-
 const FILENAME = 'readFile.txt';
 
 describe('readFile', () => {
@@ -20,18 +18,18 @@ describe('readFile', () => {
   });
 
   describe('read a text file', () => {
-    let content;
+    let buffer;
 
     beforeEach(async () => {
-      content = await fs.promise.readFile(FILENAME);
+      buffer = await fs.promise.readFile(FILENAME);
     });
 
     test('should be of type Buffer', () => {
-      assert(content instanceof Buffer);
+      expect(buffer).toBeInstanceOf(Buffer);
     });
 
     test('should return the content of the file', () => {
-      assert.equal(content.toString(), 'Hello, World!');
+      expect(buffer.toString()).toBe('Hello, World!');
     });
   });
 });

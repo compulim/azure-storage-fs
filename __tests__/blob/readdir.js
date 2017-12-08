@@ -1,7 +1,5 @@
 'use strict'
 
-const assert = require('assert');
-
 const DIR_NAME = 'readdir';
 
 const FILES = {
@@ -24,15 +22,7 @@ describe('readdir', () => {
     await Promise.all(Object.keys(FILES).map(file => helper.ensureUnlinkIfExists(`${ DIR_NAME }/${ file }`)));
   });
 
-  describe('read a dir', () => {
-    let actualFiles;
-
-    beforeEach(async () => {
-      actualFiles = (await fs.promise.readdir(DIR_NAME));
-    });
-
-    test('should list files', () => {
-      expect(Object.keys(FILES)).toEqual(actualFiles);
-    });
+  test('read a dir should list files', () => {
+    return expect(fs.promise.readdir(DIR_NAME)).resolves.toEqual(Object.keys(FILES));
   });
 });

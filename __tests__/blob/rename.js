@@ -32,13 +32,12 @@ describe('rename', () => {
   });
 
   test('rename a non-exist file', async () => {
-    expect(fs.promise.rename(FILENAME2, FILENAME3)).rejects.toHaveProperty('code', 'ENOENT');
+    return expect(fs.promise.rename(FILENAME2, FILENAME3)).rejects.toHaveProperty('code', 'ENOENT');
   });
 
   test('rename to an existing file', async () => {
-    await helper.ensureWriteFile(FILENAME1, 'Hello, World!');
     await helper.ensureWriteFile(FILENAME2, 'Hello, World!');
 
-    expect(fs.promise.rename(FILENAME1, FILENAME2)).rejects.toHaveProperty('code', 'EEXIST');
+    return expect(fs.promise.rename(FILENAME1, FILENAME2)).rejects.toHaveProperty('code', 'EEXIST');
   });
 });

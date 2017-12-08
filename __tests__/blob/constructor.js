@@ -2,7 +2,6 @@
 
 require('dotenv').config();
 
-const assert       = require('assert');
 const AzureBlobFS  = require('../../lib/AzureBlobFS');
 const azureStorage = require('azure-storage');
 
@@ -27,16 +26,10 @@ describe('constructor', () => {
       await helper.ensureUnlinkIfExists(FILENAME);
     });
 
-    describe('read/write a text file', () => {
-      let content;
+    test('should read/write file', async () => {
+      const buffer = await fs.promise.readFile(FILENAME);
 
-      beforeEach(async () => {
-        content = await fs.promise.readFile(FILENAME);
-      });
-
-      test('should return the content of the file', () => {
-        assert.equal(content.toString(), 'Hello, World!');
-      });
+      expect(buffer.toString()).toBe('Hello, World!');
     });
   });
 
@@ -58,16 +51,10 @@ describe('constructor', () => {
       await helper.ensureUnlinkIfExists(FILENAME);
     });
 
-    describe('read/write a text file', () => {
-      let content;
+    test('should read/write file', async () => {
+      const content = await fs.promise.readFile(FILENAME);
 
-      beforeEach(async () => {
-        content = await fs.promise.readFile(FILENAME);
-      });
-
-      test('should return the content of the file', () => {
-        assert.equal(content.toString(), 'Hello, World!');
-      });
+      expect(content.toString()).toBe('Hello, World!');
     });
   });
 });

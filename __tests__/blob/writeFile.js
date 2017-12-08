@@ -2,7 +2,6 @@
 
 require('dotenv').config();
 
-const assert = require('assert');
 const fetch  = require('node-fetch');
 
 const FILENAME = 'writeFile.txt';
@@ -29,11 +28,11 @@ describe('writeFile', () => {
       const url = `https://${ process.env.AZURE_STORAGE_ACCOUNT }.blob.core.windows.net/${ process.env.TEST_CONTAINER }/writeFile.txt?${ token }`;
       const res = await fetch(url);
 
-      assert.equal(res.status, 200);
+      expect(res.status).toBe(200);
 
       const content = await res.text();
 
-      assert.equal(content, 'TEST');
+      expect(content).toBe('TEST');
     });
 
     describe('when stat-ing the file', () => {
@@ -44,19 +43,19 @@ describe('writeFile', () => {
       });
 
       test('should have a file size of 4 bytes', () => {
-        assert.equal(stat.size, 4);
+        expect(stat.size).toBe(4);
       });
 
       test('should not be a directory', () => {
-        assert.equal(stat.isDirectory(), false);
+        expect(stat.isDirectory()).toBe(false);
       });
 
       test('should have metadata "hello" equals to "Aloha!"', () => {
-        assert.deepEqual(stat.metadata, { hello: 'Aloha!' });
+        expect(stat.metadata).toEqual({ hello: 'Aloha!' });
       });
 
       test('should have "Content-Settings" set to "text/plain"', () => {
-        assert.equal(stat.contentSettings.contentType, 'text/plain');
+        expect(stat.contentSettings.contentType).toBe('text/plain');
       });
     });
   });

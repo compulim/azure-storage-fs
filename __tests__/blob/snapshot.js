@@ -2,7 +2,6 @@
 
 require('dotenv').config();
 
-const assert = require('assert');
 const retry  = require('promise-retry');
 const stream = require('stream');
 
@@ -35,8 +34,8 @@ describe('snapshot', () => {
         stat = await fs.promise.stat(FILENAME, { metadata: true });
       });
 
-      test('should returns version equals to "1"', () => assert.deepEqual(stat.metadata, { version: '1' }));
-      test('should returns "Content-Type" as "text/plain"', () => assert.equal(stat.contentSettings.contentType, 'text/plain'));
+      test('should returns version equals to "1"', () => expect(stat.metadata).toEqual({ version: '1' }));
+      test('should returns "Content-Type" as "text/plain"', () => expect(stat.contentSettings.contentType).toBe('text/plain'));
     });
 
     describe('when stat-ing the new snapshot', () => {
@@ -46,8 +45,8 @@ describe('snapshot', () => {
         stat = await retry(retry => fs.promise.stat(FILENAME, { metadata: true, snapshot: firstSnapshot }), { minTimeout: 100 });
       });
 
-      test('should returns version equals to "2"', () => assert.deepEqual(stat.metadata, { version: '2' }));
-      test('should returns "Content-Type" as "text/plain"', () => assert.equal(stat.contentSettings.contentType, 'text/plain'));
+      test('should returns version equals to "2"', () => expect(stat.metadata).toEqual({ version: '2' }));
+      test('should returns "Content-Type" as "text/plain"', () => expect(stat.contentSettings.contentType).toBe('text/plain'));
     });
 
     describe('overwrite the file with new content', () => {
@@ -56,24 +55,16 @@ describe('snapshot', () => {
         await helper.ensureStat(FILENAME, stat => stat.metadata.version === '3');
       });
 
-      describe('when reading the file with snapshot ID', () => {
-        let content;
+      test('when reading the file with snapshot ID should return original content', async () => {
+        const buffer = await fs.promise.readFile(FILENAME, { snapshot: firstSnapshot });
 
-        beforeEach(async () => {
-          content = await fs.promise.readFile(FILENAME, { snapshot: firstSnapshot });
-        });
-
-        test('should return original content', () => assert.equal('Hello, World!', content));
+        expect(buffer.toString()).toBe('Hello, World!');
       });
 
-      describe('when reading the file without specifying snapshot ID', () => {
-        let content;
+      test('when reading the file without specifying snapshot ID should return the new content', async () => {
+        const content = await fs.promise.readFile(FILENAME);
 
-        beforeEach(async () => {
-          content = await fs.promise.readFile(FILENAME);
-        });
-
-        test('should return the new content', () => assert.equal('Aloha!', content));
+        expect(content.toString()).toBe('Aloha!');
       });
 
       describe('when stat-ing the file with snapshot ID', () => {
@@ -83,8 +74,8 @@ describe('snapshot', () => {
           stat = await fs.promise.stat(FILENAME, { metadata: true, snapshot: firstSnapshot });
         });
 
-        test('should return version equals to "2"', () => assert.deepEqual(stat.metadata, { version: '2' }));
-        test('should returns "Content-Type" as "text/plain"', () => assert.equal(stat.contentSettings.contentType, 'text/plain'));
+        test('should return version equals to "2"', () => expect(stat.metadata).toEqual({ version: '2' }));
+        test('should returns "Content-Type" as "text/plain"', () => expect(stat.contentSettings.contentType).toBe('text/plain'));
       });
 
       describe('when stat-ing the file with all snapshots and metadata', () => {
@@ -94,8 +85,8 @@ describe('snapshot', () => {
           stat = await fs.promise.stat(FILENAME, { metadata: true, snapshot: true });
         });
 
-        test('should return version equals to "3"', () => assert.deepEqual(stat.metadata, { version: '3' }));
-        test('should returns "Content-Type" as "text/html"', () => assert.equal(stat.contentSettings.contentType, 'text/html'));
+        test('should return version equals to "3"', () => expect(stat.metadata).toEqual({ version: '3' }));
+        test('should returns "Content-Type" as "text/html"', () => expect(stat.contentSettings.contentType).toBe('text/html'));
 
         test('should return two snapshots', () => {
           const cleanSnapshots = stat.snapshots.map(snapshot => ({
@@ -106,7 +97,7 @@ describe('snapshot', () => {
             url            : snapshot.url
           }));
 
-          assert.deepEqual(cleanSnapshots, [{
+          expect(cleanSnapshots).toEqual([{
             contentSettings: { contentType: 'text/plain' },
             id             : firstSnapshot,
             metadata       : { version: '2' },
