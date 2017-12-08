@@ -7,9 +7,6 @@
     "url": "https://github.com/compulim/azure-storage-fs.git"
   },
   "license": "MIT",
-  "dependencies": {
-    "bluebird": "^3.5.0"
-  },
   "peerDependencies": {
     "azure-storage": "^2.6.0"
   },
