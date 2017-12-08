@@ -7,12 +7,10 @@ const FILENAME = 'createReadStream.txt';
 describe('createReadStream', () => {
   let fs, helper;
 
-  before(async () => {
-    fs     = await require('./createAzureBlobFS')();
-    helper = require('./testHelper')(fs.promise);
-  });
-
   beforeEach(async () => {
+    fs     = await require('../../testUtils/createAzureBlobFS')();
+    helper = require('../../testUtils/testHelper')(fs.promise);
+
     await helper.ensureUnlinkIfExists(FILENAME);
     await helper.ensureWriteFile(FILENAME, 'Hello, World!');
   });
@@ -35,7 +33,7 @@ describe('createReadStream', () => {
         content = await readAll(readStream);
       });
 
-      it('should return the content of the file', () => {
+      test('should return the content of the file', () => {
         assert.equal(content.toString(), 'Hello, World!');
       });
     });

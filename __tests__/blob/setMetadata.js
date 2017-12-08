@@ -7,12 +7,10 @@ const FILENAME = 'metadata.txt';
 describe('setMetadata', () => {
   let fs, helper;
 
-  before(async () => {
-    fs     = await require('./createAzureBlobFS')();
-    helper = require('./testHelper')(fs.promise);
-  });
-
   beforeEach(async () => {
+    fs     = await require('../../testUtils/createAzureBlobFS')();
+    helper = require('../../testUtils/testHelper')(fs.promise);
+
     await helper.ensureUnlinkIfExists(FILENAME);
     await helper.ensureWriteFile(FILENAME, 'TEST', { contentSettings: { contentType: 'text/plain' }, metadata: { hello: 'Aloha!' } });
   });
@@ -21,23 +19,23 @@ describe('setMetadata', () => {
     await helper.ensureUnlinkIfExists(FILENAME);
   });
 
-  context('when reading metadata', () => {
+  describe('when reading metadata', () => {
     let stat;
 
     beforeEach(async () => stat = await fs.promise.stat(FILENAME, { metadata: true }));
 
-    it('should return metadata', () => assert.deepEqual(stat.metadata, { hello: 'Aloha!' }));
+    test('should return metadata', () => assert.deepEqual(stat.metadata, { hello: 'Aloha!' }));
   });
 
-  context('when modifying metadata', () => {
+  describe('when modifying metadata', () => {
     beforeEach(async () => await fs.promise.setMetadata(FILENAME, { hello: 'World!' }));
 
-    context('then reading metadata', () => {
+    describe('then reading metadata', () => {
       let stat;
 
       beforeEach(async () => stat = await fs.promise.stat(FILENAME, { metadata: true }));
 
-      it('should return new metadata', () => assert.deepEqual(stat.metadata, { hello: 'World!' }));
+      test('should return new metadata', () => assert.deepEqual(stat.metadata, { hello: 'World!' }));
     });
   });
 });

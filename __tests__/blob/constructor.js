@@ -3,7 +3,7 @@
 require('dotenv').config();
 
 const assert       = require('assert');
-const AzureBlobFS  = require('../lib/AzureBlobFS');
+const AzureBlobFS  = require('../../lib/AzureBlobFS');
 const azureStorage = require('azure-storage');
 
 const FILENAME = 'constructor.txt';
@@ -12,15 +12,13 @@ describe('constructor', () => {
   describe('construct using BlobService object', () => {
     let fs, helper;
 
-    before(async () => {
-      await require('./createAzureBlobFS')();
+    beforeEach(async () => {
+      await require('../../testUtils/createAzureBlobFS')();
 
       fs = new AzureBlobFS(azureStorage.createBlobService(), process.env.TEST_CONTAINER);
 
-      helper = require('./testHelper')(fs.promise);
-    });
+      helper = require('../../testUtils/testHelper')(fs.promise);
 
-    beforeEach(async () => {
       await helper.ensureUnlinkIfExists(FILENAME);
       await helper.ensureWriteFile(FILENAME, 'Hello, World!');
     });
@@ -36,7 +34,7 @@ describe('constructor', () => {
         content = await fs.promise.readFile(FILENAME);
       });
 
-      it('should return the content of the file', () => {
+      test('should return the content of the file', () => {
         assert.equal(content.toString(), 'Hello, World!');
       });
     });
@@ -45,15 +43,13 @@ describe('constructor', () => {
   describe('construct by letting BlobService to read from environment variable', () => {
     let fs, helper;
 
-    before(async () => {
-      await require('./createAzureBlobFS')();
+    beforeEach(async () => {
+      await require('../../testUtils/createAzureBlobFS')();
 
       fs = new AzureBlobFS(null, null, process.env.TEST_CONTAINER);
 
-      helper = require('./testHelper')(fs.promise);
-    });
+      helper = require('../../testUtils/testHelper')(fs.promise);
 
-    beforeEach(async () => {
       await helper.ensureUnlinkIfExists(FILENAME);
       await helper.ensureWriteFile(FILENAME, 'Hello, World!');
     });
@@ -69,7 +65,7 @@ describe('constructor', () => {
         content = await fs.promise.readFile(FILENAME);
       });
 
-      it('should return the content of the file', () => {
+      test('should return the content of the file', () => {
         assert.equal(content.toString(), 'Hello, World!');
       });
     });
