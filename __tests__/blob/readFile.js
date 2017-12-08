@@ -7,12 +7,10 @@ const FILENAME = 'readFile.txt';
 describe('readFile', () => {
   let fs, helper;
 
-  before(async () => {
-    fs     = await require('./createAzureBlobFS')();
-    helper = require('./testHelper')(fs.promise);
-  });
-
   beforeEach(async () => {
+    fs     = await require('../../testUtils/createAzureBlobFS')();
+    helper = require('../../testUtils/testHelper')(fs.promise);
+
     await helper.ensureUnlinkIfExists(FILENAME);
     await helper.ensureWriteFile(FILENAME, 'Hello, World!');
   });
@@ -28,11 +26,11 @@ describe('readFile', () => {
       content = await fs.promise.readFile(FILENAME);
     });
 
-    it('should be of type Buffer', () => {
+    test('should be of type Buffer', () => {
       assert(content instanceof Buffer);
     });
 
-    it('should return the content of the file', () => {
+    test('should return the content of the file', () => {
       assert.equal(content.toString(), 'Hello, World!');
     });
   });
