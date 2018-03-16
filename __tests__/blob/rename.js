@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 const FILENAME1 = 'rename1.txt';
 const FILENAME2 = 'rename2.txt';

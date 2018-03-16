@@ -1,5 +1,31 @@
 language: node_js
 node_js:
-  - "8"
+  - "9"
 before_script:
-  - npm install azure-storage
+  - npm run build
+before_deploy:
+  - git config --local user.name "William Wong"
+  - git config --local user.email "compulim@hotmail.com"
+  - npm run versionCommit
+deploy:
+  - provider: npm
+    api_key:
+      secure: "gmxqqbvucfmNe2aysjhToAeJAMfH6f4Pe76tnpXA1omA0EM01WrzzEtnK6blUY5UqsD+XaJ4HdO1M9F7u/Q8Qcca1Os/NiD/mlzhQ2ta50McPIMOXEKPygvwx48xfO0g4vSHzwTx2slQhXhtNKHoCpyRah/GRzAod6iexW5wjK+7vmlHgiFfa1lrOHhpG+8shvwO+OtzOYKQNh92oHlkJpWqLRPbtdt9I+ICaV5NCqZxJCneu6qFhyzsYqlSsDZr5iMrk9RzfqH5I+8ET6OJJ5uYqKEd8qgPOa4JJ5KJK0Dbujepj7GHobxRd3kWjldwSiMNuSVAT6JIhXfiaSF1QpD44zFhDmE5/++k/KvZS0OQGyrjPBXEJzCLREjMe1QlVptHpzCKimGFvcZ4RTndoef05q7vNIk29ml6d0zQDU0sPA21LkoVDlSyEbyOxL1mffG897XATGV2JcMadiMdn3ogWCvb36ovz/kcsXLtWMtxU6M10b2QQNlf44mLURxd0+P9RovdXNlVqOXQ7iGEGcSUwZWgGeN75OSYVCb6ziPtNvVmTlYHWi6/kNPW/UEyaJIdOG90qmd5V0uMnfndrQaIgBt4X19yuGPHqsFUdiR3DFebcLKCKisvkmdjXjT2nAMQ0kqEvi6U/VABQ6Y7/jA1BK66HQ6wMNo6NuLf+Gc="
+    email: "compulim@hotmail.com"
+    on:
+      branch: master
+    skip_cleanup: true
+    tag: master
+  - provider: npm
+    api_key:
+      secure: "gmxqqbvucfmNe2aysjhToAeJAMfH6f4Pe76tnpXA1omA0EM01WrzzEtnK6blUY5UqsD+XaJ4HdO1M9F7u/Q8Qcca1Os/NiD/mlzhQ2ta50McPIMOXEKPygvwx48xfO0g4vSHzwTx2slQhXhtNKHoCpyRah/GRzAod6iexW5wjK+7vmlHgiFfa1lrOHhpG+8shvwO+OtzOYKQNh92oHlkJpWqLRPbtdt9I+ICaV5NCqZxJCneu6qFhyzsYqlSsDZr5iMrk9RzfqH5I+8ET6OJJ5uYqKEd8qgPOa4JJ5KJK0Dbujepj7GHobxRd3kWjldwSiMNuSVAT6JIhXfiaSF1QpD44zFhDmE5/++k/KvZS0OQGyrjPBXEJzCLREjMe1QlVptHpzCKimGFvcZ4RTndoef05q7vNIk29ml6d0zQDU0sPA21LkoVDlSyEbyOxL1mffG897XATGV2JcMadiMdn3ogWCvb36ovz/kcsXLtWMtxU6M10b2QQNlf44mLURxd0+P9RovdXNlVqOXQ7iGEGcSUwZWgGeN75OSYVCb6ziPtNvVmTlYHWi6/kNPW/UEyaJIdOG90qmd5V0uMnfndrQaIgBt4X19yuGPHqsFUdiR3DFebcLKCKisvkmdjXjT2nAMQ0kqEvi6U/VABQ6Y7/jA1BK66HQ6wMNo6NuLf+Gc="
+    email: "compulim@hotmail.com"
+    on:
+      tags: true
+    skip_cleanup: true
+  - provider: releases
+    api_key:
+      secure: "OAa7xy7VJ19drL9i1MPiX7G9pCSRBNjHsE6/COlmlxXOQrcJv0GIVXeXn2oAQS21H3oOe0A6X7XiPqgvlD9Ol+E40Qmyi1deICJj+vJqlbIhnsm+HZDaXnoFKF/44/9r41s19EwQRX0H/oLCD+lStC/cA1Ef1Mb2MDY6DdU+BVALZc7qhcNVK/jmNZbZtWxkDRswXVX5c81MVj5tOQpxsU+fCu2VS8B30MZqUnJ7OV2D34zqxCgrdnJTc7t4epz0ESHBOa3rjA7/DO1rSoHtY0/RqFMLBUmwgHJqZZRDcV67XBxkzFU8CxYsL15BMGcl8bO9N3Ilr+4TuwxeleWzI2efkgQJpUOzgSYn4Ns8VWN3kB8SS8IPYJZ97A0JBFqw/+U0MEPxpcArdVav83mXUeRODOZE98CygoetnyHpgxfqJsWE9NRh4Au/RUTfAE2mrzEkU5SdYhMs4BYt9ApJgzWEJIpi7rTou0MV84u8+orqnxSIW7Mn+oOHo36NQg0vv/js44dg7c5I3sdVsVmYY8y0NXMTv3+uoNIczzB1Ms5PPbJjkQn88jmwpdcSAmRf0dVXy/miOJLBsT+XjmMXfxlnwaYfTx0kD3ZNsUdSGK7wEtdZMu0WFPyHG5NVNHmv1M5ESq0v0SUniJhGwTiHDAqr2bWEYZqy+jVD/kkXz4I="
+    on:
+      tags: true
+    skip_cleanup: true

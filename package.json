@@ -1,23 +1,17 @@
 {
   "name": "azure-storage-fs",
-  "version": "0.4.0",
+  "version": "0.4.1-0",
   "description": "A drop-in \"fs\" replacement for accessing Azure Storage with Node.js \"fs\" API",
   "repository": {
     "type": "git",
     "url": "https://github.com/compulim/azure-storage-fs.git"
   },
   "license": "MIT",
-  "peerDependencies": {
-    "azure-storage": "^2.6.0"
-  },
-  "main": "index.js",
-  "devDependencies": {
-    "dotenv": "^4.0.0",
-    "jest": "^21.2.1",
-    "node-fetch": "^1.6.3",
-    "promise-retry": "^1.1.1"
-  },
+  "main": "lib/index.js",
   "scripts": {
+    "build": "babel --out-dir lib src/. --ignore **/*.spec.js,**/*.test.js,__tests__/**/*",
+    "clean": "npx rimraf lib",
+    "versionCommit": "npx gulp-cli version-commit",
     "test": "jest"
   },
   "keywords": [
@@ -31,7 +25,25 @@
     "storage",
     "windows"
   ],
+  "devDependencies": {
+    "azure-storage": "^2.6.0",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-stage-3": "^6.24.1",
+    "dotenv": "^4.0.0",
+    "gulp": "^3.9.1",
+    "gulp-exec": "^3.0.1",
+    "jest": "^21.2.1",
+    "last-commit-log": "^1.0.3",
+    "node-fetch": "^1.6.3",
+    "promise-retry": "^1.1.1",
+    "semver": "^5.5.0"
+  },
   "optionalDependencies": {
     "debug": "^2.6.3"
+  },
+  "peerDependencies": {
+    "azure-storage": "^2.6.0"
   }
 }
