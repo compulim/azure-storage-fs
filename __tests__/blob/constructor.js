@@ -2,7 +2,7 @@
 
 require('dotenv').config();
 
-const AzureBlobFS  = require('../../lib/AzureBlobFS');
+const AzureBlobFS  = require('../../src/AzureBlobFS');
 const azureStorage = require('azure-storage');
 
 const FILENAME = 'constructor.txt';
