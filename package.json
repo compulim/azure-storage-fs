@@ -32,13 +32,9 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-stage-3": "^6.24.1",
     "dotenv": "^4.0.0",
-    "gulp": "^3.9.1",
-    "gulp-exec": "^3.0.1",
     "jest": "^21.2.1",
-    "last-commit-log": "^1.0.3",
     "node-fetch": "^1.6.3",
-    "promise-retry": "^1.1.1",
-    "semver": "^5.5.0"
+    "promise-retry": "^1.1.1"
   },
   "optionalDependencies": {
     "debug": "^2.6.3"
