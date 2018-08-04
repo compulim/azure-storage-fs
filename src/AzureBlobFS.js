@@ -12,6 +12,8 @@ const path = require('path');
 const readAll = require('./util/readAll');
 const sleep = require('./util/sleep');
 const { R_OK, W_OK, X_OK } = require('fs');
+const S_IFREG = 32768;
+const S_IFDIR = 16384;
 const { promisifyObject, toCallback } = require('./util/promisifyHelper');
 
 const
@@ -452,7 +454,7 @@ class AzureBlobFS {
           contentSettings: properties.contentSettings,
           isDirectory    : IS_FILE,
           metadata,
-          mode           : R_OK | W_OK,
+          mode           : R_OK | W_OK | S_IFREG,
           mtime          : new Date(properties.lastModified),
           size           : +properties.contentLength,
           url            : this._blobService.getUrl(this.container, pathname)
@@ -480,7 +482,7 @@ class AzureBlobFS {
         if (entries.length && entries[0].name === pathname + this.options.blobDelimiter) {
           return {
             isDirectory: IS_DIRECTORY,
-            mode: R_OK | W_OK | X_OK,
+            mode: R_OK | W_OK | X_OK | S_IFDIR,
             mtime: new Date(0),
             size: 0
           };
@@ -493,7 +495,7 @@ class AzureBlobFS {
 
       return {
         isDirectory: IS_DIRECTORY,
-        mode: R_OK | W_OK | X_OK,
+        mode: R_OK | W_OK | X_OK | S_IFDIR,
         mtime: new Date(lastModified),
         size: 0
       };
