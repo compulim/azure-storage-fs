@@ -99,9 +99,7 @@ class AzureBlobFS {
       'snapshot',
       'stat',
       'unlink',
-      'writeFile',
-      'createWriteStream',
-      'createReadStream',
+      'writeFile'
     ].forEach(name => {
       this.promise[name] = this[name].bind(this);
       this[name] = toCallback(this[name], { context: this });
@@ -554,10 +552,4 @@ class AzureBlobFS {
   }
 }
 
-module.exports = {
-  AzureBlobFS: AzureBlobFS,
-  normalizePath: normalizePath,
-  DEFAULT_WRITE_FILE_OPTIONS: DEFAULT_WRITE_FILE_OPTIONS,
-  DEFAULT_READ_FILE_OPTIONS: DEFAULT_READ_FILE_OPTIONS,
-  DEFAULT_OPTIONS: DEFAULT_OPTIONS
-};
+module.exports = AzureBlobFS;
