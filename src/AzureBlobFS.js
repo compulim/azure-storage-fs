@@ -67,22 +67,25 @@ const REQUIRED_BLOB_SERVICE_APIS = [
 class AzureBlobFS {
   constructor(account, secret, container, options = DEFAULT_OPTIONS) {
     if (account && REQUIRED_BLOB_SERVICE_APIS.every(name => typeof account[name] === 'function')) {
+      //account is blob service
+      //secret is container
+      //container is options
       // If account looks like a BlobService (with all of our required APIs), then use it
       this._blobService = account;
-      container = secret;
-      options = container;
+      this.container = secret;
+      this.options = container;
     } else {
       this._blobService = require('azure-storage').createBlobService(account, secret);
+      this.container = container;
+      this.options = options;
     }
-
-    this.options = options;
+    
 
     this._blobServicePromised = promisifyObject(
       this._blobService,
       REQUIRED_BLOB_SERVICE_APIS
     );
 
-    this.container = container;
     this.promise = {};
 
     [
