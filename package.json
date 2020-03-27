@@ -14,6 +14,9 @@
     "versionCommit": "npx gulp-cli version-commit",
     "test": "jest"
   },
+  "files": [
+    "src"
+  ],
   "keywords": [
     "azure",
     "blob",
