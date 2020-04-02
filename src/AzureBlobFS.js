@@ -101,9 +101,7 @@ class AzureBlobFS {
       'snapshot',
       'stat',
       'unlink',
-      'writeFile',
-      'createWriteStream',
-      'createReadStream',
+      'writeFile'
     ].forEach(name => {
       this.promise[name] = this[name].bind(this);
       this[name] = toCallback(this[name], { context: this });
