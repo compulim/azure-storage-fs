@@ -108,6 +108,9 @@ class AzureBlobFS {
       this.promise[name] = this[name].bind(this);
       this[name] = toCallback(this[name], { context: this });
     });
+
+    this.promise['createWriteStream'] = this['createWriteStream'].bind(this);
+    this.promise['createReadStream'] = this['createReadStream'].bind(this);
   }
 
   createReadStream(pathname, options = DEFAULT_CREATE_READ_STREAM_OPTIONS) {
