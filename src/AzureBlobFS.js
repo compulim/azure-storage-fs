@@ -17,7 +17,8 @@ const { promisifyObject, toCallback } = require('./util/promisifyHelper');
 const
   DEFAULT_OPTIONS = {
     blobDelimiter: '/',
-    renameCheckInterval: 500
+    renameCheckInterval: 500,
+    logger: null,
   },
   DEFAULT_SAS_OPTIONS = { flag: 'r' },
   DEFAULT_CREATE_READ_STREAM_OPTIONS = { flags: 'r', encoding: null, fd: null, mode: 0o666, autoClose: true },
@@ -79,7 +80,8 @@ class AzureBlobFS {
       this.container = container;
       this.options = options;
     }
-    
+
+    this.logger = this.options.logger || require('bunyan').createLogger({ name: "AzureBlobFS" });
 
     this._blobServicePromised = promisifyObject(
       this._blobService,
@@ -109,7 +111,7 @@ class AzureBlobFS {
   }
 
   createReadStream(pathname, options = DEFAULT_CREATE_READ_STREAM_OPTIONS) {
-    debug(`createReadStream(${ JSON.stringify(pathname) }, ${ JSON.stringify(options) })`);
+    this.logger.trace({ pathname, options }, `createReadStream`);
 
     options = Object.assign({}, DEFAULT_CREATE_READ_STREAM_OPTIONS, options);
 
@@ -141,7 +143,7 @@ class AzureBlobFS {
   }
 
   createWriteStream(pathname, options = DEFAULT_CREATE_WRITE_STREAM_OPTIONS) {
-    debug(`createWriteStream(${ JSON.stringify(pathname) }, ${ JSON.stringify(options) })`);
+    this.logger.trace({ pathname, options }, `createWriteStream`);
 
     options = Object.assign({}, DEFAULT_CREATE_WRITE_STREAM_OPTIONS, options);
 
@@ -170,7 +172,7 @@ class AzureBlobFS {
   }
 
   async mkdir(pathname) {
-    debug(`mkdir(${ JSON.stringify(pathname) })`);
+    this.logger.trace({ pathname }, `mkdir`);
 
     pathname = normalizePath(pathname);
     pathname = pathname && (pathname + this.options.blobDelimiter);
@@ -186,7 +188,7 @@ class AzureBlobFS {
   }
 
   async open(pathname, flags = 'r', mode, options = {}) {
-    debug(`open(${ JSON.stringify(pathname) }, ${ JSON.stringify(flags) }, ${ JSON.stringify(mode) })`);
+    this.logger.trace({ pathname, flags, mode }, `open`);
 
     pathname = normalizePath(pathname);
 
@@ -218,7 +220,7 @@ class AzureBlobFS {
   }
 
   async readdir(pathname) {
-    debug(`readdir(${ JSON.stringify(pathname) })`);
+    this.logger.trace({pathname}, `readdir`);
 
     pathname = normalizePath(pathname);
     pathname = pathname && (pathname + this.options.blobDelimiter);
@@ -256,7 +258,7 @@ class AzureBlobFS {
   readFile(pathname, options = DEFAULT_READ_FILE_OPTIONS) {
     options = Object.assign({}, DEFAULT_READ_FILE_OPTIONS, options);
 
-    debug(`readFile(${ JSON.stringify(pathname) }, ${ JSON.stringify(options) })`);
+    this.logger.trace({ pathname, options }, `readFile`);
 
     pathname = normalizePath(pathname);
 
@@ -277,7 +279,7 @@ class AzureBlobFS {
   }
 
   async rename(oldPathname, newPathname) {
-    debug(`rename(${ JSON.stringify(oldPathname) }, ${ JSON.stringify(newPathname) })`);
+    this.logger.trace({ oldPathname, newPathname }, `rename`);
 
     oldPathname = normalizePath(oldPathname);
     newPathname = normalizePath(newPathname);
@@ -329,7 +331,7 @@ class AzureBlobFS {
   }
 
   async rmdir(pathname) {
-    debug(`rmdir(${ JSON.stringify(pathname) })`);
+    this.logger.trace({ pathname }, `rmdir`);
 
     pathname = normalizePath(pathname);
 
@@ -356,7 +358,7 @@ class AzureBlobFS {
       throw new Error('expiry must be set to a number or Date');
     }
 
-    debug(`sas(${ JSON.stringify(pathname) }, ${ JSON.stringify(options) })`);
+    this.logger.trace({ pathname, options }, `sas`);
 
     pathname = normalizePath(pathname);
 
@@ -374,7 +376,7 @@ class AzureBlobFS {
   }
 
   setMetadata(pathname, metadata, options = DEFAULT_METADATA_OPTIONS) {
-    debug(`setMetadata(${ pathname }, ${ JSON.stringify(metadata) })`);
+    this.logger.trace({ pathname, metadata }, `setMetadata`);
 
     const apiOptions = {
       snapshotId: options.snapshot
@@ -384,7 +386,7 @@ class AzureBlobFS {
   }
 
   snapshot(pathname, options = DEFAULT_SNAPSHOT_OPTIONS) {
-    debug(`snapshot(${ JSON.stringify(pathname) })`);
+    this.logger.trace({ pathname }, `snapshot`);
 
     pathname = normalizePath(pathname);
 
@@ -431,7 +433,7 @@ class AzureBlobFS {
   }
 
   async stat(pathname, options = { metadata: false, snapshot: false }) {
-    debug(`stat(${ JSON.stringify(pathname) })`);
+    this.logger.trace({ pathname }, `stat`);
 
     pathname = normalizePath(pathname);
 
@@ -506,7 +508,7 @@ class AzureBlobFS {
   }
 
   async unlink(pathname, options = { snapshot: true }) {
-    debug(`unlink(${ JSON.stringify(pathname) }, ${ JSON.stringify(options) })`);
+    this.logger.trace({ pathname, options }, `unlink`);
 
     pathname = normalizePath(pathname);
 
@@ -532,7 +534,7 @@ class AzureBlobFS {
   writeFile(pathname, data, options = DEFAULT_WRITE_FILE_OPTIONS) {
     options = Object.assign({}, DEFAULT_WRITE_FILE_OPTIONS, options);
 
-    debug(`writeFile(${ JSON.stringify(pathname) }, <${ data.length } bytes>)`);
+    this.logger.trace({ pathname, bytes: data.length }, `writeFile`);
 
     pathname = normalizePath(pathname);
 
