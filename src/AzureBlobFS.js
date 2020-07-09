@@ -17,7 +17,8 @@ const { promisifyObject, toCallback } = require('./util/promisifyHelper');
 const
   DEFAULT_OPTIONS = {
     blobDelimiter: '/',
-    renameCheckInterval: 500
+    renameCheckInterval: 500,
+    logger: null,
   },
   DEFAULT_SAS_OPTIONS = { flag: 'r' },
   DEFAULT_CREATE_READ_STREAM_OPTIONS = { flags: 'r', encoding: null, fd: null, mode: 0o666, autoClose: true },
@@ -67,22 +68,26 @@ const REQUIRED_BLOB_SERVICE_APIS = [
 class AzureBlobFS {
   constructor(account, secret, container, options = DEFAULT_OPTIONS) {
     if (account && REQUIRED_BLOB_SERVICE_APIS.every(name => typeof account[name] === 'function')) {
+      //account is blob service
+      //secret is container
+      //container is options
       // If account looks like a BlobService (with all of our required APIs), then use it
       this._blobService = account;
-      container = secret;
-      options = container;
+      this.container = secret;
+      this.options = container;
     } else {
       this._blobService = require('azure-storage').createBlobService(account, secret);
+      this.container = container;
+      this.options = options;
     }
 
-    this.options = options;
+    this.logger = this.options.logger || require('bunyan').createLogger({ name: "AzureBlobFS" });
 
     this._blobServicePromised = promisifyObject(
       this._blobService,
       REQUIRED_BLOB_SERVICE_APIS
     );
 
-    this.container = container;
     this.promise = {};
 
     [
@@ -101,10 +106,13 @@ class AzureBlobFS {
       this.promise[name] = this[name].bind(this);
       this[name] = toCallback(this[name], { context: this });
     });
+
+    this.promise['createWriteStream'] = this['createWriteStream'].bind(this);
+    this.promise['createReadStream'] = this['createReadStream'].bind(this);
   }
 
   createReadStream(pathname, options = DEFAULT_CREATE_READ_STREAM_OPTIONS) {
-    debug(`createReadStream(${ JSON.stringify(pathname) }, ${ JSON.stringify(options) })`);
+    this.logger.trace({ pathname, options }, `createReadStream`);
 
     options = Object.assign({}, DEFAULT_CREATE_READ_STREAM_OPTIONS, options);
 
@@ -136,7 +144,7 @@ class AzureBlobFS {
   }
 
   createWriteStream(pathname, options = DEFAULT_CREATE_WRITE_STREAM_OPTIONS) {
-    debug(`createWriteStream(${ JSON.stringify(pathname) }, ${ JSON.stringify(options) })`);
+    this.logger.trace({ pathname, options }, `createWriteStream`);
 
     options = Object.assign({}, DEFAULT_CREATE_WRITE_STREAM_OPTIONS, options);
 
@@ -165,7 +173,7 @@ class AzureBlobFS {
   }
 
   async mkdir(pathname) {
-    debug(`mkdir(${ JSON.stringify(pathname) })`);
+    this.logger.trace({ pathname }, `mkdir`);
 
     pathname = normalizePath(pathname);
     pathname = pathname && (pathname + this.options.blobDelimiter);
@@ -181,7 +189,7 @@ class AzureBlobFS {
   }
 
   async open(pathname, flags = 'r', mode, options = {}) {
-    debug(`open(${ JSON.stringify(pathname) }, ${ JSON.stringify(flags) }, ${ JSON.stringify(mode) })`);
+    this.logger.trace({ pathname, flags, mode }, `open`);
 
     pathname = normalizePath(pathname);
 
@@ -213,7 +221,7 @@ class AzureBlobFS {
   }
 
   async readdir(pathname) {
-    debug(`readdir(${ JSON.stringify(pathname) })`);
+    this.logger.trace({pathname}, `readdir`);
 
     pathname = normalizePath(pathname);
     pathname = pathname && (pathname + this.options.blobDelimiter);
@@ -251,7 +259,7 @@ class AzureBlobFS {
   readFile(pathname, options = DEFAULT_READ_FILE_OPTIONS) {
     options = Object.assign({}, DEFAULT_READ_FILE_OPTIONS, options);
 
-    debug(`readFile(${ JSON.stringify(pathname) }, ${ JSON.stringify(options) })`);
+    this.logger.trace({ pathname, options }, `readFile`);
 
     pathname = normalizePath(pathname);
 
@@ -272,20 +280,26 @@ class AzureBlobFS {
   }
 
   async rename(oldPathname, newPathname) {
-    debug(`rename(${ JSON.stringify(oldPathname) }, ${ JSON.stringify(newPathname) })`);
+    this.logger.trace({ oldPathname, newPathname }, `rename`);
 
     oldPathname = normalizePath(oldPathname);
     newPathname = normalizePath(newPathname);
 
     const oldURI = this._blobService.getUrl(this.container, oldPathname);
 
+    this.logger.trace(`old URI for ${oldPathname} is ${oldURI}`);
+
     if ((await this._blobServicePromised.doesBlobExist(this.container, newPathname)).exists) {
+      this.logger.trace(`source file ${oldPathname} does not exist`);
+
       return Promise.reject(ERR_EXIST);
     }
 
     let copyStatus;
 
     try {
+      this.logger.trace(`starting copy of ${oldURI} to ${newPathname}`);
+
       copyStatus = (await this._blobServicePromised.startCopyBlob(oldURI, this.container, newPathname, {})).copy.status
     } catch (err) {
       return Promise.reject(err.statusCode === 404 ? ERR_NOT_FOUND : err);
@@ -293,6 +307,8 @@ class AzureBlobFS {
 
     try {
       while (copyStatus !== 'success') {
+        this.logger.trace(`copy status for ${oldURI} is ${copyStatus}`);
+
         switch (copyStatus) {
         case 'failed':
           return Promise.reject(ERR_UNKNOWN);
@@ -302,9 +318,12 @@ class AzureBlobFS {
 
         case 'pending':
           await sleep(this.options.renameCheckInterval);
+
           copyStatus = (await this._blobServicePromised.getBlobProperties(this.container, newPathname)).copy.status;
         }
       }
+
+      this.logger.trace(`copy ${oldURI} to ${newPathname} was successful, deleting old blob`);
 
       this._blobServicePromised.deleteBlobIfExists(
         this.container,
@@ -312,7 +331,11 @@ class AzureBlobFS {
         {
           deleteSnapshots: BlobUtilities.SnapshotDeleteOptions.BLOB_AND_SNAPSHOTS
         }
-      );
+      ).then(result => {
+        this.logger.trace(`${oldURI} was successfully deleted`);
+      }, err => {
+        this.logger.warn(`failed to delete ${oldURI}; reason: ${err.message || err}`);
+      });
     } catch (err) {
       try {
         await this._blobServicePromised.deleteBlobIfExists(this.container, newPathname);
@@ -324,7 +347,7 @@ class AzureBlobFS {
   }
 
   async rmdir(pathname) {
-    debug(`rmdir(${ JSON.stringify(pathname) })`);
+    this.logger.trace({ pathname }, `rmdir`);
 
     pathname = normalizePath(pathname);
 
@@ -351,7 +374,7 @@ class AzureBlobFS {
       throw new Error('expiry must be set to a number or Date');
     }
 
-    debug(`sas(${ JSON.stringify(pathname) }, ${ JSON.stringify(options) })`);
+    this.logger.trace({ pathname, options }, `sas`);
 
     pathname = normalizePath(pathname);
 
@@ -369,7 +392,7 @@ class AzureBlobFS {
   }
 
   setMetadata(pathname, metadata, options = DEFAULT_METADATA_OPTIONS) {
-    debug(`setMetadata(${ pathname }, ${ JSON.stringify(metadata) })`);
+    this.logger.trace({ pathname, metadata }, `setMetadata`);
 
     const apiOptions = {
       snapshotId: options.snapshot
@@ -379,7 +402,7 @@ class AzureBlobFS {
   }
 
   snapshot(pathname, options = DEFAULT_SNAPSHOT_OPTIONS) {
-    debug(`snapshot(${ JSON.stringify(pathname) })`);
+    this.logger.trace({ pathname }, `snapshot`);
 
     pathname = normalizePath(pathname);
 
@@ -426,7 +449,7 @@ class AzureBlobFS {
   }
 
   async stat(pathname, options = { metadata: false, snapshot: false }) {
-    debug(`stat(${ JSON.stringify(pathname) })`);
+    this.logger.trace({ pathname }, `stat`);
 
     pathname = normalizePath(pathname);
 
@@ -501,7 +524,7 @@ class AzureBlobFS {
   }
 
   async unlink(pathname, options = { snapshot: true }) {
-    debug(`unlink(${ JSON.stringify(pathname) }, ${ JSON.stringify(options) })`);
+    this.logger.trace({ pathname, options }, `unlink`);
 
     pathname = normalizePath(pathname);
 
@@ -527,7 +550,7 @@ class AzureBlobFS {
   writeFile(pathname, data, options = DEFAULT_WRITE_FILE_OPTIONS) {
     options = Object.assign({}, DEFAULT_WRITE_FILE_OPTIONS, options);
 
-    debug(`writeFile(${ JSON.stringify(pathname) }, <${ data.length } bytes>)`);
+    this.logger.trace({ pathname, bytes: data.length }, `writeFile`);
 
     pathname = normalizePath(pathname);
 
@@ -549,4 +572,10 @@ class AzureBlobFS {
   }
 }
 
-module.exports = AzureBlobFS;
+module.exports = {
+  AzureBlobFS: AzureBlobFS,
+  normalizePath: normalizePath,
+  DEFAULT_WRITE_FILE_OPTIONS: DEFAULT_WRITE_FILE_OPTIONS,
+  DEFAULT_READ_FILE_OPTIONS: DEFAULT_READ_FILE_OPTIONS,
+  DEFAULT_OPTIONS: DEFAULT_OPTIONS
+};
