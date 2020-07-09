@@ -287,13 +287,19 @@ class AzureBlobFS {
 
     const oldURI = this._blobService.getUrl(this.container, oldPathname);
 
+    this.logger.trace(`old URI for ${oldPathname} is ${oldURI}`);
+
     if ((await this._blobServicePromised.doesBlobExist(this.container, newPathname)).exists) {
+      this.logger.trace(`source file ${oldPathname} does not exist`);
+
       return Promise.reject(ERR_EXIST);
     }
 
     let copyStatus;
 
     try {
+      this.logger.trace(`starting copy of ${oldURI} to ${newPathname}`);
+
       copyStatus = (await this._blobServicePromised.startCopyBlob(oldURI, this.container, newPathname, {})).copy.status
     } catch (err) {
       return Promise.reject(err.statusCode === 404 ? ERR_NOT_FOUND : err);
@@ -301,6 +307,8 @@ class AzureBlobFS {
 
     try {
       while (copyStatus !== 'success') {
+        this.logger.trace(`copy status for ${oldURI} is ${copyStatus}`);
+
         switch (copyStatus) {
         case 'failed':
           return Promise.reject(ERR_UNKNOWN);
@@ -310,9 +318,12 @@ class AzureBlobFS {
 
         case 'pending':
           await sleep(this.options.renameCheckInterval);
+
           copyStatus = (await this._blobServicePromised.getBlobProperties(this.container, newPathname)).copy.status;
         }
       }
+
+      this.logger.trace(`copy ${oldURI} to ${newPathname} was successful, deleting old blob`);
 
       this._blobServicePromised.deleteBlobIfExists(
         this.container,
@@ -320,7 +331,11 @@ class AzureBlobFS {
         {
           deleteSnapshots: BlobUtilities.SnapshotDeleteOptions.BLOB_AND_SNAPSHOTS
         }
-      );
+      ).then(result => {
+        this.logger.trace(`${oldURI} was successfully deleted`);
+      }, err => {
+        this.logger.warn(`failed to delete ${oldURI}; reason: ${err.message || err}`);
+      });
     } catch (err) {
       try {
         await this._blobServicePromised.deleteBlobIfExists(this.container, newPathname);
